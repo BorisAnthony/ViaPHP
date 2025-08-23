@@ -1,8 +1,8 @@
-# PathsPHP
+# ViaPHP
 
 A PHP library for setting and retrieving filesystem paths in your project.
 
-PathsPHP provides a singleton static class for setting nested system paths for easy access throughout your codebase, without hardcoding them all and passing around arrays or constsants.
+ViaPHP provides a singleton static class for setting nested system paths for easy access throughout your codebase, without hardcoding them all and passing around arrays or constsants.
 
 ## Usage
 
@@ -58,7 +58,7 @@ Via::setBases(
 Assign a sub-path to a Base
 
 ```
-Paths:assignToBase(role: "modules", path: "modules", baseRole: "src" );
+Via::assignToBase(role: "modules", path: "modules", baseRole: "src" );
 ```
 
 
@@ -68,7 +68,7 @@ Assign multiple sub-paths to Bases with an array
 (Calls `self::assignToBase()` internally)
 
 ```
-Paths:assignToBases(
+Via::assignToBases(
     [role: "caches", path: "caches", baseRole: "data"],
     [role: "logs", path: "logs", baseRole: "data"],
     [role: "modules", path: "modules", baseRole: "src"],
