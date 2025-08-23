@@ -90,7 +90,7 @@ describe('Base Management', function () {
     it('sets a single base', function () {
         Via::setBase('data', 'data');
 
-        expect(Via::f('rel.data'))->toBe('/data');
+        expect(Via::p('rel.data'))->toBe('/data');
     });
 
     it('sets multiple bases', function () {
@@ -100,9 +100,9 @@ describe('Base Management', function () {
             ['alias' => 'images', 'path' => 'assets/images']
         ]);
 
-        expect(Via::f('rel.data'))->toBe('/data');
-        expect(Via::f('rel.src'))->toBe('/src');
-        expect(Via::f('rel.images'))->toBe('/assets/images');
+        expect(Via::p('rel.data'))->toBe('/data');
+        expect(Via::p('rel.src'))->toBe('/src');
+        expect(Via::p('rel.images'))->toBe('/assets/images');
     });
 
     it('validates bases array structure', function () {
@@ -120,9 +120,9 @@ describe('Base Management', function () {
             ['images', 'assets/images']
         ]);
 
-        expect(Via::f('rel.data'))->toBe('/data');
-        expect(Via::f('rel.src'))->toBe('/src');
-        expect(Via::f('rel.images'))->toBe('/assets/images');
+        expect(Via::p('rel.data'))->toBe('/data');
+        expect(Via::p('rel.src'))->toBe('/src');
+        expect(Via::p('rel.images'))->toBe('/assets/images');
     });
 
     it('sets bases using mixed array formats', function () {
@@ -132,9 +132,9 @@ describe('Base Management', function () {
             ['assets', 'public/assets'] // positional
         ]);
 
-        expect(Via::f('rel.data'))->toBe('/data');
-        expect(Via::f('rel.src'))->toBe('/src');
-        expect(Via::f('rel.assets'))->toBe('/public/assets');
+        expect(Via::p('rel.data'))->toBe('/data');
+        expect(Via::p('rel.src'))->toBe('/src');
+        expect(Via::p('rel.assets'))->toBe('/public/assets');
     });
 });
 
@@ -147,7 +147,7 @@ describe('Assignment Management', function () {
     it('assigns to a base', function () {
         Via::assignToBase('logs', 'logs', 'data');
 
-        expect(Via::f('rel.data.logs'))->toBe('/data/logs');
+        expect(Via::p('rel.data.logs'))->toBe('/data/logs');
     });
 
     it('assigns multiple to bases', function () {
@@ -157,9 +157,9 @@ describe('Assignment Management', function () {
             ['alias' => 'modules', 'path' => 'modules', 'baseAlias' => 'src']
         ]);
 
-        expect(Via::f('rel.data.logs'))->toBe('/data/logs');
-        expect(Via::f('rel.data.cache'))->toBe('/data/cache');
-        expect(Via::f('rel.src.modules'))->toBe('/src/modules');
+        expect(Via::p('rel.data.logs'))->toBe('/data/logs');
+        expect(Via::p('rel.data.cache'))->toBe('/data/cache');
+        expect(Via::p('rel.src.modules'))->toBe('/src/modules');
     });
 
     it('validates base exists when assigning', function () {
@@ -179,9 +179,9 @@ describe('Assignment Management', function () {
             ['modules', 'modules', 'src']
         ]);
 
-        expect(Via::f('rel.data.logs'))->toBe('/data/logs');
-        expect(Via::f('rel.data.cache'))->toBe('/data/cache');
-        expect(Via::f('rel.src.modules'))->toBe('/src/modules');
+        expect(Via::p('rel.data.logs'))->toBe('/data/logs');
+        expect(Via::p('rel.data.cache'))->toBe('/data/cache');
+        expect(Via::p('rel.src.modules'))->toBe('/src/modules');
     });
 
     it('assigns using mixed array formats', function () {
@@ -191,9 +191,9 @@ describe('Assignment Management', function () {
             ['modules', 'modules', 'src'] // positional
         ]);
 
-        expect(Via::f('rel.data.logs'))->toBe('/data/logs');
-        expect(Via::f('rel.data.cache'))->toBe('/data/cache');
-        expect(Via::f('rel.src.modules'))->toBe('/src/modules');
+        expect(Via::p('rel.data.logs'))->toBe('/data/logs');
+        expect(Via::p('rel.data.cache'))->toBe('/data/cache');
+        expect(Via::p('rel.src.modules'))->toBe('/src/modules');
     });
 });
 
@@ -216,16 +216,16 @@ describe('Initialization', function () {
 
         expect(Via::getLocalPath())->toBe('/Users/test/project');
         expect(Via::getHost())->toBe('test.local');
-        expect(Via::f('rel.data'))->toBe('/data');
-        expect(Via::f('rel.data.logs'))->toBe('/data/logs');
-        expect(Via::f('local.data.logs'))->toBe('/Users/test/project/data/logs');
-        expect(Via::f('host.data.logs'))->toBe('//test.local/data/logs');
+        expect(Via::p('rel.data'))->toBe('/data');
+        expect(Via::p('rel.data.logs'))->toBe('/data/logs');
+        expect(Via::p('local.data.logs'))->toBe('/Users/test/project/data/logs');
+        expect(Via::p('host.data.logs'))->toBe('//test.local/data/logs');
     });
 
     it('handles partial config', function () {
         Via::init(['bases' => [['alias' => 'data', 'path' => 'data']]]);
 
-        expect(Via::f('rel.data'))->toBe('/data');
+        expect(Via::p('rel.data'))->toBe('/data');
         expect(Via::getLocalPath())->toBeNull();
         expect(Via::getHost())->toBeNull();
     });
@@ -242,57 +242,57 @@ describe('Path Retrieval', function () {
     });
 
     it('retrieves relative paths', function () {
-        expect(Via::f('rel.data'))->toBe('/data');
-        expect(Via::f('rel.src'))->toBe('/src');
-        expect(Via::f('rel.data.logs'))->toBe('/data/logs');
-        expect(Via::f('rel.src.frontend_js'))->toBe('/src/frontend/js');
+        expect(Via::p('rel.data'))->toBe('/data');
+        expect(Via::p('rel.src'))->toBe('/src');
+        expect(Via::p('rel.data.logs'))->toBe('/data/logs');
+        expect(Via::p('rel.src.frontend_js'))->toBe('/src/frontend/js');
     });
 
     it('retrieves local paths', function () {
-        expect(Via::f('local.data'))->toBe('/Users/test/project/data');
-        expect(Via::f('local.data.logs'))->toBe('/Users/test/project/data/logs');
-        expect(Via::f('local.src.frontend_js'))->toBe('/Users/test/project/src/frontend/js');
+        expect(Via::p('local.data'))->toBe('/Users/test/project/data');
+        expect(Via::p('local.data.logs'))->toBe('/Users/test/project/data/logs');
+        expect(Via::p('local.src.frontend_js'))->toBe('/Users/test/project/src/frontend/js');
     });
 
     it('retrieves host paths', function () {
-        expect(Via::f('host.data'))->toBe('//example.com/data');
-        expect(Via::f('host.data.logs'))->toBe('//example.com/data/logs');
-        expect(Via::f('host.src.frontend_js'))->toBe('//example.com/src/frontend/js');
+        expect(Via::p('host.data'))->toBe('//example.com/data');
+        expect(Via::p('host.data.logs'))->toBe('//example.com/data/logs');
+        expect(Via::p('host.src.frontend_js'))->toBe('//example.com/src/frontend/js');
     });
 
     it('handles configured nested paths properly', function () {
         // Set up nested configurations for the test
         Via::assignToBase('subdir', 'subdir', 'data');
 
-        expect(Via::f('rel.data.subdir'))->toBe('/data/subdir');
-        expect(Via::f('local.data.subdir'))->toBe('/Users/test/project/data/subdir');
-        expect(Via::f('host.data.subdir'))->toBe('//example.com/data/subdir');
+        expect(Via::p('rel.data.subdir'))->toBe('/data/subdir');
+        expect(Via::p('local.data.subdir'))->toBe('/Users/test/project/data/subdir');
+        expect(Via::p('host.data.subdir'))->toBe('//example.com/data/subdir');
     });
 
     it('validates path format', function () {
-        expect(fn () => Via::f('invalid'))
+        expect(fn () => Via::p('invalid'))
             ->toThrow(\InvalidArgumentException::class, 'Path must contain at least type and alias');
 
-        expect(fn () => Via::f('invalid.type.alias'))
+        expect(fn () => Via::p('invalid.type.alias'))
             ->toThrow(\InvalidArgumentException::class, "Invalid path type 'invalid'. Must be 'rel', 'local', or 'host'");
     });
 
     it('validates alias exists', function () {
-        expect(fn () => Via::f('rel.nonexistent'))
+        expect(fn () => Via::p('rel.nonexistent'))
             ->toThrow(\InvalidArgumentException::class, "Role 'nonexistent' must be a base. Assignments must be accessed via base.assignment format");
     });
 
     it('requires local path for local type', function () {
         Via::reset(); // Ensure localPath is null
 
-        expect(fn () => Via::f('local.data'))
+        expect(fn () => Via::p('local.data'))
             ->toThrow(\RuntimeException::class, 'Local path not set. Call setLocalPath() first.');
     });
 
     it('requires host for host type', function () {
         Via::reset(); // Ensure host is null
 
-        expect(fn () => Via::f('host.data'))
+        expect(fn () => Via::p('host.data'))
             ->toThrow(\RuntimeException::class, 'Host not set. Call setHost() first.');
     });
 });
@@ -309,9 +309,9 @@ describe('Strict Path Validation', function () {
     });
 
     it('allows valid single-level paths', function () {
-        expect(Via::f('rel.data'))->toBe('/data');
-        expect(Via::f('rel.logs'))->toBe('/logs');
-        expect(Via::f('rel.data.app_data'))->toBe('/data/app');
+        expect(Via::p('rel.data'))->toBe('/data');
+        expect(Via::p('rel.logs'))->toBe('/logs');
+        expect(Via::p('rel.data.app_data'))->toBe('/data/app');
     });
 
     it('allows valid nested configured paths', function () {
@@ -319,19 +319,19 @@ describe('Strict Path Validation', function () {
         Via::assignToBase('error_logs', 'errors', 'logs');
         Via::assignToBase('ui_components', 'ui', 'src');
 
-        expect(Via::f('rel.logs.error_logs'))->toBe('/logs/errors');
-        expect(Via::f('local.src.ui_components'))->toBe('/Users/test/project/src/ui');
-        expect(Via::f('host.logs.error_logs'))->toBe('//example.com/logs/errors');
+        expect(Via::p('rel.logs.error_logs'))->toBe('/logs/errors');
+        expect(Via::p('local.src.ui_components'))->toBe('/Users/test/project/src/ui');
+        expect(Via::p('host.logs.error_logs'))->toBe('//example.com/logs/errors');
     });
 
     it('rejects arbitrary path segments', function () {
-        expect(fn () => Via::f('rel.data.arbitrary'))
+        expect(fn () => Via::p('rel.data.arbitrary'))
             ->toThrow(\InvalidArgumentException::class, "Path segment 'arbitrary' not found as assignment under 'data'");
 
-        expect(fn () => Via::f('local.src.random.path'))
+        expect(fn () => Via::p('local.src.random.path'))
             ->toThrow(\InvalidArgumentException::class, "Path segment 'random' not found as assignment under 'src'");
 
-        expect(fn () => Via::f('host.logs.nonexistent'))
+        expect(fn () => Via::p('host.logs.nonexistent'))
             ->toThrow(\InvalidArgumentException::class, "Path segment 'nonexistent' not found as assignment under 'logs'");
     });
 
@@ -339,10 +339,10 @@ describe('Strict Path Validation', function () {
         // Set up a configuration
         Via::assignToBase('app_logs', 'app', 'logs');
 
-        expect(Via::f('rel.logs.app_logs'))->toBe('/logs/app');
+        expect(Via::p('rel.logs.app_logs'))->toBe('/logs/app');
 
         // This should fail because 'invalid' is not configured at any level
-        expect(fn () => Via::f('rel.logs.app_logs.invalid'))
+        expect(fn () => Via::p('rel.logs.app_logs.invalid'))
             ->toThrow(\InvalidArgumentException::class, "Path segment 'invalid' not found as assignment under 'app_logs'");
     });
 
@@ -351,18 +351,18 @@ describe('Strict Path Validation', function () {
         $localInvalidPath = str_replace('rel.', 'local.', $invalidPath);
         $hostInvalidPath  = str_replace('rel.', 'host.', $invalidPath);
 
-        expect(fn () => Via::f($invalidPath))
+        expect(fn () => Via::p($invalidPath))
             ->toThrow(\InvalidArgumentException::class);
 
-        expect(fn () => Via::f($localInvalidPath))
+        expect(fn () => Via::p($localInvalidPath))
             ->toThrow(\InvalidArgumentException::class);
 
-        expect(fn () => Via::f($hostInvalidPath))
+        expect(fn () => Via::p($hostInvalidPath))
             ->toThrow(\InvalidArgumentException::class);
     });
 
     it('provides clear error messages for invalid segments', function () {
-        expect(fn () => Via::f('rel.data.invalid.segment'))
+        expect(fn () => Via::p('rel.data.invalid.segment'))
             ->toThrow(\InvalidArgumentException::class, "Path segment 'invalid' not found as assignment under 'data'");
     });
 });
@@ -376,29 +376,29 @@ describe('Cross-Platform Path Handling', function () {
     it('handles multi-level paths with forward slashes', function () {
         Via::assignToBase('coremods', 'core/modules', 'src');
 
-        expect(Via::f('rel.src.coremods'))->toBe('/src/core/modules');
-        expect(Via::f('local.src.coremods'))->toBe('/Users/test/project/src/core/modules');
+        expect(Via::p('rel.src.coremods'))->toBe('/src/core/modules');
+        expect(Via::p('local.src.coremods'))->toBe('/Users/test/project/src/core/modules');
     });
 
     it('handles multi-level paths with mixed separators', function () {
         // Test with various path separators that might come from different sources
         Via::assignToBase('deeppath', 'level1\level2/level3', 'src');
 
-        expect(Via::f('rel.src.deeppath'))->toBe('/src/level1/level2/level3');
-        expect(Via::f('local.src.deeppath'))->toBe('/Users/test/project/src/level1/level2/level3');
+        expect(Via::p('rel.src.deeppath'))->toBe('/src/level1/level2/level3');
+        expect(Via::p('local.src.deeppath'))->toBe('/Users/test/project/src/level1/level2/level3');
     });
 
     it('canonicalizes paths with redundant separators', function () {
         Via::assignToBase('messypath', 'dir1\/\dir2/../dir2/dir3', 'src');
 
-        expect(Via::f('rel.src.messypath'))->toBe('/src/dir1/dir2/dir3');
-        expect(Via::f('local.src.messypath'))->toBe('/Users/test/project/src/dir1/dir2/dir3');
+        expect(Via::p('rel.src.messypath'))->toBe('/src/dir1/dir2/dir3');
+        expect(Via::p('local.src.messypath'))->toBe('/Users/test/project/src/dir1/dir2/dir3');
     });
 
     it('handles base paths with various separators', function () {
         Via::setBase('assets', 'public\assets');
         Via::assignToBase('images', 'img\gallery', 'assets');
 
-        expect(Via::f('rel.assets.images'))->toBe('/public/assets/img/gallery');
+        expect(Via::p('rel.assets.images'))->toBe('/public/assets/img/gallery');
     });
 });

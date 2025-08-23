@@ -116,18 +116,21 @@ Via::init(
 
 Paths are accessed using dot-notation, and assembled at retrieval time (lazy loaded).
 
+The accessing method is `Via::get()` but a `Via::p()` (read: "Via path") forwarder is provided for convenient shorthand notation. ( *I use `Via::p()` myself.* )
+
+
 ```
-Via::f('rel.data.logs');   // (string) '/data/logs'
-Via::f('local.data.logs'); // (string) '/User/me/Projects/foo/data/logs'
-Via::f('host.data.logs');  // (string) '://foo.local.test/data/logs'
+Via::p('rel.data.logs');   // (string) '/data/logs'
+Via::p('local.data.logs'); // (string) '/User/me/Projects/foo/data/logs'
+Via::p('host.data.logs');  // (string) '://foo.local.test/data/logs'
 
-Via::f('rel.src');   // (string) '/src'
-Via::f('local.src'); // (string) '/User/me/Projects/foo/src'
-Via::f('host.src');  // (string) '://foo.local.test/src'
+Via::p('rel.src');   // (string) '/src'
+Via::p('local.src'); // (string) '/User/me/Projects/foo/src'
+Via::p('host.src');  // (string) '://foo.local.test/src'
 
-Via::f('rel.src.frontend_js');   // (string) '/src/frontend/js'
-Via::f('local.src.frontend_js'); // (string) '/User/me/Projects/foo/src/frontend/js'
-Via::f('host.src.frontend_js');  // (string) '://foo.local.test/src/frontend/js'
+Via::p('rel.src.frontend_js');   // (string) '/src/frontend/js'
+Via::p('local.src.frontend_js'); // (string) '/User/me/Projects/foo/src/frontend/js'
+Via::p('host.src.frontend_js');  // (string) '://foo.local.test/src/frontend/js'
 ```
 
 ---
@@ -136,7 +139,7 @@ Via::f('host.src.frontend_js');  // (string) '://foo.local.test/src/frontend/js'
 
 Under the hood we use 
 - [`symfony/filesystem`](https://symfony.com/doc/current/components/filesystem.html#path-manipulation-utilities)'s [`Path::class`](https://github.com/symfony/symfony/blob/7.3/src/Symfony/Component/Filesystem/Path.php) methods for concatenating and cannonicalizing paths when assigning/setting and before returning them.
-- [`dflydev/dot-access-data`](https://github.com/dflydev/dflydev-dot-access-data) [`Data` methods](https://github.com/dflydev/dflydev-dot-access-data/blob/main/src/Data.php) for setting an internal representation and parsing and resolving `Via::f()` requests from it.
+- [`dflydev/dot-access-data`](https://github.com/dflydev/dflydev-dot-access-data) [`Data` methods](https://github.com/dflydev/dflydev-dot-access-data/blob/main/src/Data.php) for setting an internal representation and parsing and resolving `Via::p()` requests from it.
 
 
 ---

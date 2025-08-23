@@ -32,9 +32,9 @@ Via::setBase('src', 'src');
 Via::setBase('assets', 'public/assets');
 
 echo "Base paths configured:\n";
-echo "- data: " . Via::f('rel.data') . "\n";
-echo "- src: " . Via::f('rel.src') . "\n";
-echo "- assets: " . Via::f('rel.assets') . "\n\n";
+echo "- data: " . Via::p('rel.data') . "\n";
+echo "- src: " . Via::p('rel.src') . "\n";
+echo "- assets: " . Via::p('rel.assets') . "\n\n";
 
 // Example 3: Multiple Bases at Once (with positional arrays)
 echo "3. Setting Multiple Bases\n";
@@ -47,9 +47,9 @@ Via::setBases([
 ]);
 
 echo "Multiple bases set (using both positional and associative formats):\n";
-echo "- uploads: " . Via::f('rel.uploads') . "\n";
-echo "- cache: " . Via::f('rel.cache') . "\n";
-echo "- logs: " . Via::f('rel.logs') . "\n\n";
+echo "- uploads: " . Via::p('rel.uploads') . "\n";
+echo "- cache: " . Via::p('rel.cache') . "\n";
+echo "- logs: " . Via::p('rel.logs') . "\n\n";
 
 // Example 4: Assigning Sub-paths to Bases
 echo "4. Assigning Sub-paths to Bases\n";
@@ -61,10 +61,10 @@ Via::assignToBase('components', 'components', 'src');
 Via::assignToBase('models', 'models', 'src');
 
 echo "Assignments to bases:\n";
-echo "- user_uploads: " . Via::f('rel.uploads.user_uploads') . "\n";
-echo "- temp_uploads: " . Via::f('rel.uploads.temp_uploads') . "\n";
-echo "- components: " . Via::f('rel.src.components') . "\n";
-echo "- models: " . Via::f('rel.src.models') . "\n\n";
+echo "- user_uploads: " . Via::p('rel.uploads.user_uploads') . "\n";
+echo "- temp_uploads: " . Via::p('rel.uploads.temp_uploads') . "\n";
+echo "- components: " . Via::p('rel.src.components') . "\n";
+echo "- models: " . Via::p('rel.src.models') . "\n\n";
 
 // Example 5: Multiple Assignments at Once (with positional arrays)
 echo "5. Multiple Assignments\n";
@@ -78,10 +78,10 @@ Via::assignToBases([
 ]);
 
 echo "Multiple assignments (using both positional and associative formats):\n";
-echo "- error_logs: " . Via::f('rel.logs.error_logs') . "\n";
-echo "- access_logs: " . Via::f('rel.logs.access_logs') . "\n";
-echo "- images: " . Via::f('rel.assets.images') . "\n";
-echo "- css: " . Via::f('rel.assets.css') . "\n\n";
+echo "- error_logs: " . Via::p('rel.logs.error_logs') . "\n";
+echo "- access_logs: " . Via::p('rel.logs.access_logs') . "\n";
+echo "- images: " . Via::p('rel.assets.images') . "\n";
+echo "- css: " . Via::p('rel.assets.css') . "\n\n";
 
 // Example 5b: Positional Array Format Showcase
 echo "5b. Positional Array Format Showcase\n";
@@ -121,28 +121,28 @@ Via::assignToBases([
 ]);
 
 echo "Results:\n";
-echo "- " . Via::f('rel.data.uploads') . "\n";
-echo "- " . Via::f('local.public.assets') . "\n";
-echo "- " . Via::f('host.src.components') . "\n\n";
+echo "- " . Via::p('rel.data.uploads') . "\n";
+echo "- " . Via::p('local.public.assets') . "\n";
+echo "- " . Via::p('host.src.components') . "\n\n";
 
 // Example 6: Path Types - Relative, Local, and Host
 echo "6. Different Path Types\n";
 echo "----------------------\n";
 
 echo "Relative paths (project-relative):\n";
-echo "- Data directory: " . Via::f('rel.data') . "\n";
-echo "- Data uploads: " . Via::f('rel.data.uploads') . "\n";
-echo "- Public assets: " . Via::f('rel.public.assets') . "\n\n";
+echo "- Data directory: " . Via::p('rel.data') . "\n";
+echo "- Data uploads: " . Via::p('rel.data.uploads') . "\n";
+echo "- Public assets: " . Via::p('rel.public.assets') . "\n\n";
 
 echo "Local filesystem paths (absolute):\n";
-echo "- Data directory: " . Via::f('local.data') . "\n";
-echo "- Data uploads: " . Via::f('local.data.uploads') . "\n";
-echo "- Public assets: " . Via::f('local.public.assets') . "\n\n";
+echo "- Data directory: " . Via::p('local.data') . "\n";
+echo "- Data uploads: " . Via::p('local.data.uploads') . "\n";
+echo "- Public assets: " . Via::p('local.public.assets') . "\n\n";
 
 echo "Host URLs:\n";
-echo "- Data directory: " . Via::f('host.data') . "\n";
-echo "- Data uploads: " . Via::f('host.data.uploads') . "\n";
-echo "- Public assets: " . Via::f('host.public.assets') . "\n\n";
+echo "- Data directory: " . Via::p('host.data') . "\n";
+echo "- Data uploads: " . Via::p('host.data.uploads') . "\n";
+echo "- Public assets: " . Via::p('host.public.assets') . "\n\n";
 
 // Example 7: Nested Path Configuration and Access
 echo "7. Nested Path Configuration and Access\n";
@@ -158,24 +158,24 @@ Via::assignToBase('main_css', 'main.css', 'public');
 Via::assignToBase('error_logs', 'errors', 'logs');
 
 echo "Nested path configuration:\n";
-echo "- App logs within logs base: " . Via::f('rel.logs.app_logs') . "\n";
-echo "- Avatars within data base: " . Via::f('local.data.avatars') . "\n";
-echo "- Main CSS file URL: " . Via::f('host.public.main_css') . "\n\n";
+echo "- App logs within logs base: " . Via::p('rel.logs.app_logs') . "\n";
+echo "- Avatars within data base: " . Via::p('local.data.avatars') . "\n";
+echo "- Main CSS file URL: " . Via::p('host.public.main_css') . "\n\n";
 
 echo "Path Validation - These will work:\n";
-echo "- Valid nested: " . Via::f('rel.logs.app_logs') . "\n";
-echo "- Valid nested: " . Via::f('local.data.avatars') . "\n\n";
+echo "- Valid nested: " . Via::p('rel.logs.app_logs') . "\n";
+echo "- Valid nested: " . Via::p('local.data.avatars') . "\n\n";
 
 echo "Path Validation - These will fail (demonstration):\n";
 try {
-    Via::f('rel.logs.error_logs.nonexistent');
+    Via::p('rel.logs.error_logs.nonexistent');
     echo "- This should not print\n";
 } catch (\InvalidArgumentException $e) {
     echo "- ✗ Invalid path: " . $e->getMessage() . "\n";
 }
 
 try {
-    Via::f('rel.data.arbitrary.path');
+    Via::p('rel.data.arbitrary.path');
     echo "- This should not print\n";
 } catch (\InvalidArgumentException $e) {
     echo "- ✗ Invalid path: " . $e->getMessage() . "\n";
@@ -211,11 +211,11 @@ Via::init($config);
 echo "Initialized with complete config (using mixed positional/associative arrays):\n";
 echo "- Local path: " . Via::getLocalPath() . "\n";
 echo "- Host: " . Via::getHost() . "\n";
-echo "- Products data: " . Via::f('local.data.products') . "\n";
-echo "- Controllers: " . Via::f('rel.app.controllers') . "\n";
+echo "- Products data: " . Via::p('local.data.products') . "\n";
+echo "- Controllers: " . Via::p('rel.app.controllers') . "\n";
 
 // Note: For nested paths, we use the proper hierarchy
-echo "- Assets URL: " . Via::f('host.web.assets') . "\n\n";
+echo "- Assets URL: " . Via::p('host.web.assets') . "\n\n";
 
 print_r(Via::all());
 
@@ -228,23 +228,23 @@ Via::assignToBase('config_files', 'config', 'data');
 
 // File operations
 echo "File operations:\n";
-$configPath = Via::f('local.data.config_files');
+$configPath = Via::p('local.data.config_files');
 echo "- Config directory: {$configPath}\n";
 
-$dataPath = Via::f('local.data.products');
+$dataPath = Via::p('local.data.products');
 echo "- Products data: {$dataPath}\n";
 
 // URL generation
 echo "\nURL generation:\n";
-$assetsUrl = Via::f('host.web.assets');
+$assetsUrl = Via::p('host.web.assets');
 echo "- Assets base URL: {$assetsUrl}\n";
 
 // Template includes
 echo "\nTemplate includes:\n";
-$controllersPath = Via::f('rel.app.controllers');
+$controllersPath = Via::p('rel.app.controllers');
 echo "- Controllers path: {$controllersPath}\n";
 
-$servicesPath = Via::f('rel.app.services');
+$servicesPath = Via::p('rel.app.services');
 echo "- Services path: {$servicesPath}\n\n";
 
 // Example 10: Cross-Platform Path Handling
@@ -262,19 +262,19 @@ echo "Multi-level paths with various separators:\n";
 
 // Your edge case example with forward slashes
 Via::assignToBase('coremods', 'core/modules', 'src');
-echo "- Core modules: " . Via::f('rel.src.coremods') . "\n";
+echo "- Core modules: " . Via::p('rel.src.coremods') . "\n";
 
 // Mixed separators (Windows-style backslashes)
 Via::assignToBase('winpath', 'windows\\style\\path', 'src');
-echo "- Windows path: " . Via::f('rel.src.winpath') . "\n";
+echo "- Windows path: " . Via::p('rel.src.winpath') . "\n";
 
 // Messy paths that get cleaned up
 Via::assignToBase('messypath', 'dir1//dir2/../dir2/final', 'src');
-echo "- Cleaned messy path: " . Via::f('rel.src.messypath') . "\n";
+echo "- Cleaned messy path: " . Via::p('rel.src.messypath') . "\n";
 
 // Complex real-world example
 Via::assignToBase('deepnest', 'components\\ui//forms/../forms/inputs', 'src');
-echo "- Deep nested path: " . Via::f('rel.src.deepnest') . "\n";
+echo "- Deep nested path: " . Via::p('rel.src.deepnest') . "\n";
 
 echo "\nAll paths are normalized using Symfony's Path class for cross-OS compatibility!\n\n";
 
@@ -305,12 +305,12 @@ echo "=== Examples Complete ===\n";
 echo "\nDemonstration of strict validation:\n";
 echo "These arbitrary paths will now fail validation:\n";
 try {
-    echo Via::f('rel.src.some.arbitrary.path') . PHP_EOL;
+    echo Via::p('rel.src.some.arbitrary.path') . PHP_EOL;
 } catch (\InvalidArgumentException $e) {
     echo "- ✗ rel.src.some.arbitrary.path: " . $e->getMessage() . "\n";
 }
 try {
-    echo Via::f('local.src.some.arbitrary.path') . PHP_EOL;
+    echo Via::p('local.src.some.arbitrary.path') . PHP_EOL;
 } catch (\InvalidArgumentException $e) {
     echo "- ✗ local.src.some.arbitrary.path: " . $e->getMessage() . "\n";
 }
@@ -318,7 +318,7 @@ try {
 // Set host for final demo
 Via::setHost('demo.local');
 try {
-    echo Via::f('host.src.some.arbitrary.path') . PHP_EOL;
+    echo Via::p('host.src.some.arbitrary.path') . PHP_EOL;
 } catch (\InvalidArgumentException $e) {
     echo "- ✗ host.src.some.arbitrary.path: " . $e->getMessage() . "\n";
 }

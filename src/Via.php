@@ -47,17 +47,17 @@ class Via
         $bases = self::$data->get('bases', []);
         foreach ($bases as $baseAlias => $_) {
             $result[$baseAlias] = [
-                'rel' => self::f("rel.{$baseAlias}")
+                'rel' => self::get("rel.{$baseAlias}")
             ];
 
             // Add local path if available
             if (self::$localPath !== null) {
-                $result[$baseAlias]['local'] = self::f("local.{$baseAlias}");
+                $result[$baseAlias]['local'] = self::get("local.{$baseAlias}");
             }
 
             // Add host path if available
             if (self::$host !== null) {
-                $result[$baseAlias]['host'] = self::f("host.{$baseAlias}");
+                $result[$baseAlias]['host'] = self::get("host.{$baseAlias}");
             }
         }
 
@@ -68,17 +68,17 @@ class Via
             $fullAlias = "{$baseAlias}.{$assignmentAlias}";
 
             $result[$fullAlias] = [
-                'rel' => self::f("rel.{$fullAlias}")
+                'rel' => self::get("rel.{$fullAlias}")
             ];
 
             // Add local path if available
             if (self::$localPath !== null) {
-                $result[$fullAlias]['local'] = self::f("local.{$fullAlias}");
+                $result[$fullAlias]['local'] = self::get("local.{$fullAlias}");
             }
 
             // Add host path if available
             if (self::$host !== null) {
-                $result[$fullAlias]['host'] = self::f("host.{$fullAlias}");
+                $result[$fullAlias]['host'] = self::get("host.{$fullAlias}");
             }
         }
 
@@ -190,7 +190,7 @@ class Via
         }
     }
 
-    public static function f(string $dotPath): string
+    public static function get(string $dotPath): string
     {
         $parts = explode('.', $dotPath);
 
@@ -213,6 +213,12 @@ class Via
                 throw new \InvalidArgumentException("Invalid path type '{$type}'. Must be 'rel', 'local', or 'host'");
         }
     }
+
+    /**
+     * Convenience shorthand forwarding method
+     * - "p" for "path"
+     */
+    public static function p(string $dotPath): string { return self::get($dotPath); }
 
     /**
      * @param array<string> $subParts
