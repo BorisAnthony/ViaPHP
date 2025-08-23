@@ -301,6 +301,84 @@ echo "\n";
 
 echo "=== Examples Complete ===\n";
 
+// Example 12: Dynamic Path Appending (New Feature)
+echo "12. Dynamic Path Appending with Additional Parameter\n";
+echo "---------------------------------------------------\n";
+
+// Reset and setup for clean demo
+Via::reset();
+Via::setLocalPath('/Users/demo/webapp');
+Via::setHost('webapp.local');
+Via::setBases([
+    ['data', 'data'],
+    ['uploads', 'storage/uploads'],
+    ['src', 'src']
+]);
+Via::assignToBases([
+    ['logs', 'logs', 'data'],
+    ['user_files', 'users', 'uploads'],
+    ['components', 'components', 'src']
+]);
+
+echo "Now you can append dynamic paths to any configured alias:\n\n";
+
+echo "Base paths with additional segments:\n";
+echo "- Data config file: " . Via::p('rel.data', 'config/app.json') . "\n";
+echo "- Source utilities: " . Via::p('rel.src', 'utils/helpers.php') . "\n";
+echo "- Upload temp files: " . Via::p('rel.uploads', 'temp/processing') . "\n\n";
+
+echo "Assignment paths with additional segments:\n";
+echo "- Specific log file: " . Via::p('rel.data.logs', 'error/2024-01-15.log') . "\n";
+echo "- User avatar: " . Via::p('rel.uploads.user_files', 'avatars/user123.jpg') . "\n";
+echo "- UI component: " . Via::p('rel.src.components', 'forms/ContactForm.php') . "\n\n";
+
+echo "Works with all path types:\n";
+echo "- Local file: " . Via::p('local.data', 'cache/compiled.php') . "\n";
+echo "- Local user upload: " . Via::p('local.uploads.user_files', 'documents/invoice.pdf') . "\n";
+echo "- Host asset URL: " . Via::p('host.src.components', 'ui/styles.css') . "\n";
+echo "- Host log URL: " . Via::p('host.data.logs', 'api/requests.json') . "\n\n";
+
+echo "Path canonicalization works on additional paths too:\n";
+echo "- Messy path: " . Via::p('rel.data', 'cache/../temp//file.txt') . "\n";
+echo "- Mixed separators: " . Via::p('local.src', 'modules\\auth/controllers') . "\n";
+echo "- Complex path: " . Via::p('host.uploads.user_files', 'gallery/../thumbnails/image.jpg') . "\n\n";
+
+echo "Both get() and p() methods support the additional parameter:\n";
+echo "- Via::get(): " . Via::get('rel.data.logs', 'debug/trace.log') . "\n";
+echo "- Via::p(): " . Via::p('rel.data.logs', 'debug/trace.log') . "\n\n";
+
+echo "Backwards compatibility - these still work as before:\n";
+echo "- Without additional path: " . Via::p('rel.data.logs') . "\n";
+echo "- With null parameter: " . Via::p('rel.src.components', null) . "\n";
+echo "- With empty string: " . Via::p('rel.uploads', '') . "\n\n";
+
+echo "Real-world usage examples:\n";
+
+// File operations
+$logFile = Via::p('local.data.logs', 'app/' . date('Y-m-d') . '.log');
+echo "- Today's log file: {$logFile}\n";
+
+$userAvatar = Via::p('local.uploads.user_files', "avatars/user_123.jpg");
+echo "- User avatar path: {$userAvatar}\n";
+
+// URL generation
+$assetUrl = Via::p('host.src.components', 'ui/button.css');
+echo "- CSS asset URL: {$assetUrl}\n";
+
+$apiLogUrl = Via::p('host.data.logs', 'api/' . date('Y/m') . '/requests.log');
+echo "- API log URL: {$apiLogUrl}\n";
+
+// Template includes
+$componentPath = Via::p('rel.src.components', 'widgets/Calendar.php');
+echo "- Component include: {$componentPath}\n";
+
+$configFile = Via::p('rel.data', 'config/database.php');
+echo "- Config include: {$configFile}\n\n";
+
+echo "This feature makes ViaPHP much more flexible while maintaining strict validation!\n\n";
+
+echo "=== Examples Complete ===\n";
+
 // Demonstration that invalid paths now fail (as they should)
 echo "\nDemonstration of strict validation:\n";
 echo "These arbitrary paths will now fail validation:\n";
@@ -322,3 +400,8 @@ try {
 } catch (\InvalidArgumentException $e) {
     echo "- ✗ host.src.some.arbitrary.path: " . $e->getMessage() . "\n";
 }
+
+echo "\nBut additional path appending still works with valid configured aliases:\n";
+echo "- ✓ " . Via::p('rel.src.components', 'dynamic/path/segment.php') . "\n";
+echo "- ✓ " . Via::p('local.data.logs', 'runtime/error.log') . "\n";
+echo "- ✓ " . Via::p('host.uploads.user_files', 'gallery/photos.zip') . "\n";

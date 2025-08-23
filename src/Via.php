@@ -190,7 +190,14 @@ class Via
         }
     }
 
-    public static function get(string $dotPath): string
+    /**
+     * Retrieve a configured path by dot notation
+     *
+     * @param string $dotPath Path in dot notation (e.g., "rel.data.logs")
+     * @param string|null $additionalPath Optional additional path to append
+     * @return string The resolved path
+     */
+    public static function get(string $dotPath, ?string $additionalPath = null): string
     {
         $parts = explode('.', $dotPath);
 
@@ -204,11 +211,11 @@ class Via
 
         switch ($type) {
             case 'rel':
-                return self::buildRelativePath($alias, $subParts);
+                return self::buildRelativePath($alias, $subParts, $additionalPath);
             case 'local':
-                return self::buildLocalPath($alias, $subParts);
+                return self::buildLocalPath($alias, $subParts, $additionalPath);
             case 'host':
-                return self::buildHostPath($alias, $subParts);
+                return self::buildHostPath($alias, $subParts, $additionalPath);
             default:
                 throw new \InvalidArgumentException("Invalid path type '{$type}'. Must be 'rel', 'local', or 'host'");
         }
@@ -217,13 +224,20 @@ class Via
     /**
      * Convenience shorthand forwarding method
      * - "p" for "path"
+     *
+     * @param string $dotPath Path in dot notation (e.g., "rel.data.logs")
+     * @param string|null $additionalPath Optional additional path to append
+     * @return string The resolved path
      */
-    public static function p(string $dotPath): string { return self::get($dotPath); }
+    public static function p(string $dotPath, ?string $additionalPath = null): string
+    {
+        return self::get($dotPath, $additionalPath);
+    }
 
     /**
      * @param array<string> $subParts
      */
-    private static function buildRelativePath(string $alias, array $subParts): string
+    private static function buildRelativePath(string $alias, array $subParts, ?string $additionalPath = null): string
     {
         self::initData();
 
@@ -245,10 +259,10 @@ class Via
                     }
 
                     // Check if this forms a valid nested base under current path
-                    $nextRole = $currentPath . '.' . $part;
-                    $nextBase = self::$data->get("bases.{$nextRole}", null);
+                    $nextAlias = $currentPath . '.' . $part;
+                    $nextBase  = self::$data->get("bases.{$nextAlias}", null);
                     if ($nextBase !== null) {
-                        $currentPath = $nextRole;
+                        $currentPath = $nextAlias;
                         continue;
                     }
 
@@ -275,37 +289,44 @@ class Via
                 }
             }
 
-            return Path::canonicalize($fullPath);
+            $finalPath = Path::canonicalize($fullPath);
+
+            if ($additionalPath !== null) {
+                $canonicalAdditionalPath = Path::canonicalize($additionalPath);
+                $finalPath               = Path::join($finalPath, $canonicalAdditionalPath);
+            }
+
+            return $finalPath;
         }
 
         // If we get here, the alias is not a base, so it's invalid
         // Assignments can only be accessed through their base: base.assignment
-        throw new \InvalidArgumentException("Role '{$alias}' must be a base. Assignments must be accessed via base.assignment format");
+        throw new \InvalidArgumentException("Alias '{$alias}' must be a base. Assignments must be accessed via base.assignment format");
     }
 
     /**
      * @param array<string> $subParts
      */
-    private static function buildLocalPath(string $alias, array $subParts): string
+    private static function buildLocalPath(string $alias, array $subParts, ?string $additionalPath = null): string
     {
         if (self::$localPath === null) {
             throw new \RuntimeException('Local path not set. Call setLocalPath() first.');
         }
 
-        $relativePath = self::buildRelativePath($alias, $subParts);
+        $relativePath = self::buildRelativePath($alias, $subParts, $additionalPath);
         return Path::join(self::$localPath, ltrim($relativePath, '/'));
     }
 
     /**
      * @param array<string> $subParts
      */
-    private static function buildHostPath(string $alias, array $subParts): string
+    private static function buildHostPath(string $alias, array $subParts, ?string $additionalPath = null): string
     {
         if (self::$host === null) {
             throw new \RuntimeException('Host not set. Call setHost() first.');
         }
 
-        $relativePath = self::buildRelativePath($alias, $subParts);
+        $relativePath = self::buildRelativePath($alias, $subParts, $additionalPath);
         return '//' . self::$host . $relativePath;
     }
 }

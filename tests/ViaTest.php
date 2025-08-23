@@ -279,7 +279,7 @@ describe('Path Retrieval', function () {
 
     it('validates alias exists', function () {
         expect(fn () => Via::p('rel.nonexistent'))
-            ->toThrow(\InvalidArgumentException::class, "Role 'nonexistent' must be a base. Assignments must be accessed via base.assignment format");
+            ->toThrow(\InvalidArgumentException::class, "Alias 'nonexistent' must be a base. Assignments must be accessed via base.assignment format");
     });
 
     it('requires local path for local type', function () {
@@ -400,5 +400,92 @@ describe('Cross-Platform Path Handling', function () {
         Via::assignToBase('images', 'img\gallery', 'assets');
 
         expect(Via::p('rel.assets.images'))->toBe('/public/assets/img/gallery');
+    });
+});
+
+describe('Additional Path Parameter', function () {
+    beforeEach(function () {
+        Via::setLocalPath('/Users/test/project');
+        Via::setHost('example.com');
+        Via::setBase('data', 'data');
+        Via::setBase('src', 'src');
+        Via::assignToBase('logs', 'logs', 'data');
+        Via::assignToBase('components', 'components', 'src');
+    });
+
+    it('appends additional path to base paths', function () {
+        expect(Via::p('rel.data', 'config/settings.json'))->toBe('/data/config/settings.json');
+        expect(Via::p('rel.src', 'utils/helpers.php'))->toBe('/src/utils/helpers.php');
+    });
+
+    it('appends additional path to assignment paths', function () {
+        expect(Via::p('rel.data.logs', 'error/2024-01-01.log'))->toBe('/data/logs/error/2024-01-01.log');
+        expect(Via::p('rel.src.components', 'ui/Button.php'))->toBe('/src/components/ui/Button.php');
+    });
+
+    it('works with local paths', function () {
+        expect(Via::p('local.data', 'uploads/images'))->toBe('/Users/test/project/data/uploads/images');
+        expect(Via::p('local.data.logs', 'debug/trace.log'))->toBe('/Users/test/project/data/logs/debug/trace.log');
+        expect(Via::p('local.src.components', 'forms/LoginForm.php'))->toBe('/Users/test/project/src/components/forms/LoginForm.php');
+    });
+
+    it('works with host paths', function () {
+        expect(Via::p('host.data', 'public/assets'))->toBe('//example.com/data/public/assets');
+        expect(Via::p('host.data.logs', 'api/requests.log'))->toBe('//example.com/data/logs/api/requests.log');
+        expect(Via::p('host.src.components', 'widgets/Calendar.php'))->toBe('//example.com/src/components/widgets/Calendar.php');
+    });
+
+    it('canonicalizes additional paths', function () {
+        expect(Via::p('rel.data', 'uploads/../temp/file.txt'))->toBe('/data/temp/file.txt');
+        expect(Via::p('local.src', './utils//helpers.php'))->toBe('/Users/test/project/src/utils/helpers.php');
+        expect(Via::p('host.data.logs', 'dir1/./dir2/../final/'))->toBe('//example.com/data/logs/dir1/final');
+    });
+
+    it('handles various path separators in additional paths', function () {
+        expect(Via::p('rel.data', 'uploads\\images/gallery'))->toBe('/data/uploads/images/gallery');
+        expect(Via::p('local.src', 'modules\\auth/controllers'))->toBe('/Users/test/project/src/modules/auth/controllers');
+        expect(Via::p('host.data.logs', 'app\\errors/critical.log'))->toBe('//example.com/data/logs/app/errors/critical.log');
+    });
+
+    it('works with null additional path (backwards compatibility)', function () {
+        expect(Via::p('rel.data', null))->toBe('/data');
+        expect(Via::p('local.src.components', null))->toBe('/Users/test/project/src/components');
+        expect(Via::p('host.data.logs'))->toBe('//example.com/data/logs');
+    });
+
+    it('works with get() method as well as p() shorthand', function () {
+        expect(Via::get('rel.data', 'config/app.php'))->toBe('/data/config/app.php');
+        expect(Via::get('local.data.logs', 'error.log'))->toBe('/Users/test/project/data/logs/error.log');
+        expect(Via::get('host.src.components', 'ui/Modal.php'))->toBe('//example.com/src/components/ui/Modal.php');
+    });
+
+    it('handles empty additional path strings', function () {
+        expect(Via::p('rel.data', ''))->toBe('/data');
+        expect(Via::p('local.src', ''))->toBe('/Users/test/project/src');
+        expect(Via::p('host.data.logs', ''))->toBe('//example.com/data/logs');
+    });
+
+    it('preserves original path validation with additional paths', function () {
+        expect(fn () => Via::p('rel.nonexistent', 'some/file.txt'))
+            ->toThrow(\InvalidArgumentException::class, "Alias 'nonexistent' must be a base. Assignments must be accessed via base.assignment format");
+
+        expect(fn () => Via::p('invalid.data', 'some/file.txt'))
+            ->toThrow(\InvalidArgumentException::class, "Invalid path type 'invalid'. Must be 'rel', 'local', or 'host'");
+    });
+
+    it('requires local path for local type even with additional path', function () {
+        Via::reset();
+        Via::setBase('data', 'data');
+
+        expect(fn () => Via::p('local.data', 'file.txt'))
+            ->toThrow(\RuntimeException::class, 'Local path not set. Call setLocalPath() first.');
+    });
+
+    it('requires host for host type even with additional path', function () {
+        Via::reset();
+        Via::setBase('data', 'data');
+
+        expect(fn () => Via::p('host.data', 'file.txt'))
+            ->toThrow(\RuntimeException::class, 'Host not set. Call setHost() first.');
     });
 });
