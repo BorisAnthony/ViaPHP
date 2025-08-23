@@ -21,13 +21,22 @@ The absolute local filesystem path of the project, used for absolute filesystem 
 Via::setLocalPath(path: "/User/me/Projects/foo");
 ```
 
+In real world usage, this would be populated dynamically, based on the system.
+I.e.: the local system's full path will be different on local development and various deployment systems.
+
+So you would do something like:
+
+```
+Via::setLocalPath(path: __DIR__); // if you're calling this from the project root.
+```
 
 #### Host Domain
 The domain/hostname/IP addreess, for absolute URL paths
 
 ```
-Via::setHost(path: "foo.local.test");
+Via::setHost(host: "foo.local.test");
 ```
+Here too, you will want to set this dynamically somehow based on the context.
 
 
 #### Set Base
