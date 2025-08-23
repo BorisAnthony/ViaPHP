@@ -42,9 +42,9 @@ Here too, you will want to set this dynamically somehow based on the context.
 #### Set Base
 
 ```
-Via::setBase(role: "data", label: "data");
-Via::setBase(role: "images", label: "images");
-Via::setBase(role: "src", label: "src");
+Via::setBase(alias: "data", label: "data");
+Via::setBase(alias: "images", label: "images");
+Via::setBase(alias: "src", label: "src");
 ```
 
 #### Set Bases
@@ -55,9 +55,9 @@ Set mutliple bases at once with an array
 ```
 Via::setBases(
     [
-        [role => "data", path => "data"],
-        [role => "images", path => "images"],
-        [role => "src", path => "src"]
+        [alias => "data", path => "data"],
+        [alias => "images", path => "images"],
+        [alias => "src", path => "src"]
     ]
 );
 ```
@@ -67,7 +67,7 @@ Via::setBases(
 Assign a sub-path to a Base
 
 ```
-Via::assignToBase(role: "modules", path: "modules", baseRole: "src" );
+Via::assignToBase(alias: "modules", path: "modules", baseAlias: "src" );
 ```
 
 
@@ -78,10 +78,10 @@ Assign multiple sub-paths to Bases with an array
 
 ```
 Via::assignToBases(
-    [role: "caches", path: "caches", baseRole: "data"],
-    [role: "logs", path: "logs", baseRole: "data"],
-    [role: "modules", path: "modules", baseRole: "src"],
-    [role: "frontend_js", path: "frontend/js", baseRole: "src"]
+    [alias: "caches", path: "caches", baseAlias: "data"],
+    [alias: "logs", path: "logs", baseAlias: "data"],
+    [alias: "modules", path: "modules", baseAlias: "src"],
+    [alias: "frontend_js", path: "frontend/js", baseAlias: "src"]
 );
 ```
 
@@ -97,15 +97,15 @@ Via::init(
         "LocalPath" => "/User/me/Projects/foo",
         "absoluteDomain" => "foo.local.test",
         "bases" => [
-            [role => "data", path => "data"],
-            [role => "images", path => "images"],
-            [role => "src", path => "src"]
+            [alias => "data", path => "data"],
+            [alias => "images", path => "images"],
+            [alias => "src", path => "src"]
         ],
         "assignments": [
-            [role: "caches", path: "caches", baseRole: "data"],
-            [role: "logs", path: "logs", baseRole: "data"],
-            [role: "modules", path: "modules", baseRole: "src"],
-            [role: "frontend_js", path: "frontend/js", baseRole: "src"]
+            [alias: "caches", path: "caches", baseAlias: "data"],
+            [alias: "logs", path: "logs", baseAlias: "data"],
+            [alias: "modules", path: "modules", baseAlias: "src"],
+            [alias: "frontend_js", path: "frontend/js", baseAlias: "src"]
         ]
     ]
 )

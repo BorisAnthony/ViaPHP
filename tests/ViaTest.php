@@ -14,7 +14,7 @@ describe('Via Static Class', function () {
     it('works as a static class', function () {
         Via::setLocalPath('/test/path');
         expect(Via::getLocalPath())->toBe('/test/path');
-        
+
         Via::setHost('example.com');
         expect(Via::getHost())->toBe('example.com');
     });
@@ -30,23 +30,23 @@ describe('Via Static Class', function () {
         $all = Via::all();
 
         expect($all)->toHaveKeys(['data', 'src', 'data.logs', 'src.components']);
-        
+
         expect($all['data'])->toBe([
-            'rel' => '/data',
+            'rel'   => '/data',
             'local' => '/Users/test/project/data',
-            'host' => '//example.com/data'
+            'host'  => '//example.com/data'
         ]);
-        
+
         expect($all['data.logs'])->toBe([
-            'rel' => '/data/logs',
+            'rel'   => '/data/logs',
             'local' => '/Users/test/project/data/logs',
-            'host' => '//example.com/data/logs'
+            'host'  => '//example.com/data/logs'
         ]);
-        
+
         expect($all['src.components'])->toBe([
-            'rel' => '/src/components',
+            'rel'   => '/src/components',
             'local' => '/Users/test/project/src/components',
-            'host' => '//example.com/src/components'
+            'host'  => '//example.com/src/components'
         ]);
     });
 
@@ -95,9 +95,9 @@ describe('Base Management', function () {
 
     it('sets multiple bases', function () {
         Via::setBases([
-            ['role' => 'data', 'path' => 'data'],
-            ['role' => 'src', 'path' => 'src'],
-            ['role' => 'images', 'path' => 'assets/images']
+            ['alias' => 'data', 'path' => 'data'],
+            ['alias' => 'src', 'path' => 'src'],
+            ['alias' => 'images', 'path' => 'assets/images']
         ]);
 
         expect(Via::f('rel.data'))->toBe('/data');
@@ -106,11 +106,35 @@ describe('Base Management', function () {
     });
 
     it('validates bases array structure', function () {
-        expect(fn () => Via::setBases([['role' => 'data']]))
-            ->toThrow(\InvalidArgumentException::class, 'Each base must have "role" and "path" keys');
+        expect(fn () => Via::setBases([['alias' => 'data']]))
+            ->toThrow(\InvalidArgumentException::class, 'Each base must have "alias" and "path" keys or be a positional array [alias, path]');
 
         expect(fn () => Via::setBases([['path' => 'data']]))
-            ->toThrow(\InvalidArgumentException::class, 'Each base must have "role" and "path" keys');
+            ->toThrow(\InvalidArgumentException::class, 'Each base must have "alias" and "path" keys or be a positional array [alias, path]');
+    });
+
+    it('sets bases using positional arrays', function () {
+        Via::setBases([
+            ['data', 'data'],
+            ['src', 'src'],
+            ['images', 'assets/images']
+        ]);
+
+        expect(Via::f('rel.data'))->toBe('/data');
+        expect(Via::f('rel.src'))->toBe('/src');
+        expect(Via::f('rel.images'))->toBe('/assets/images');
+    });
+
+    it('sets bases using mixed array formats', function () {
+        Via::setBases([
+            ['data', 'data'], // positional
+            ['alias' => 'src', 'path' => 'src'], // associative
+            ['assets', 'public/assets'] // positional
+        ]);
+
+        expect(Via::f('rel.data'))->toBe('/data');
+        expect(Via::f('rel.src'))->toBe('/src');
+        expect(Via::f('rel.assets'))->toBe('/public/assets');
     });
 });
 
@@ -128,9 +152,9 @@ describe('Assignment Management', function () {
 
     it('assigns multiple to bases', function () {
         Via::assignToBases([
-            ['role' => 'logs', 'path' => 'logs', 'baseRole' => 'data'],
-            ['role' => 'cache', 'path' => 'cache', 'baseRole' => 'data'],
-            ['role' => 'modules', 'path' => 'modules', 'baseRole' => 'src']
+            ['alias' => 'logs', 'path' => 'logs', 'baseAlias' => 'data'],
+            ['alias' => 'cache', 'path' => 'cache', 'baseAlias' => 'data'],
+            ['alias' => 'modules', 'path' => 'modules', 'baseAlias' => 'src']
         ]);
 
         expect(Via::f('rel.data.logs'))->toBe('/data/logs');
@@ -140,12 +164,36 @@ describe('Assignment Management', function () {
 
     it('validates base exists when assigning', function () {
         expect(fn () => Via::assignToBase('logs', 'logs', 'nonexistent'))
-            ->toThrow(\InvalidArgumentException::class, "Base role 'nonexistent' does not exist");
+            ->toThrow(\InvalidArgumentException::class, "Base alias 'nonexistent' does not exist");
     });
 
     it('validates assignments array structure', function () {
-        expect(fn () => Via::assignToBases([['role' => 'logs', 'path' => 'logs']]))
-            ->toThrow(\InvalidArgumentException::class, 'Each assignment must have "role", "path", and "baseRole" keys');
+        expect(fn () => Via::assignToBases([['alias' => 'logs', 'path' => 'logs']]))
+            ->toThrow(\InvalidArgumentException::class, 'Each assignment must have "alias", "path", and "baseAlias" keys or be a positional array [alias, path, baseAlias]');
+    });
+
+    it('assigns using positional arrays', function () {
+        Via::assignToBases([
+            ['logs', 'logs', 'data'],
+            ['cache', 'cache', 'data'],
+            ['modules', 'modules', 'src']
+        ]);
+
+        expect(Via::f('rel.data.logs'))->toBe('/data/logs');
+        expect(Via::f('rel.data.cache'))->toBe('/data/cache');
+        expect(Via::f('rel.src.modules'))->toBe('/src/modules');
+    });
+
+    it('assigns using mixed array formats', function () {
+        Via::assignToBases([
+            ['logs', 'logs', 'data'], // positional
+            ['alias' => 'cache', 'path' => 'cache', 'baseAlias' => 'data'], // associative
+            ['modules', 'modules', 'src'] // positional
+        ]);
+
+        expect(Via::f('rel.data.logs'))->toBe('/data/logs');
+        expect(Via::f('rel.data.cache'))->toBe('/data/cache');
+        expect(Via::f('rel.src.modules'))->toBe('/src/modules');
     });
 });
 
@@ -155,12 +203,12 @@ describe('Initialization', function () {
             'LocalPath'      => '/Users/test/project',
             'absoluteDomain' => 'test.local',
             'bases'          => [
-                ['role' => 'data', 'path' => 'data'],
-                ['role' => 'src', 'path' => 'src']
+                ['alias' => 'data', 'path' => 'data'],
+                ['alias' => 'src', 'path' => 'src']
             ],
             'assignments' => [
-                ['role' => 'logs', 'path' => 'logs', 'baseRole' => 'data'],
-                ['role' => 'modules', 'path' => 'modules', 'baseRole' => 'src']
+                ['alias' => 'logs', 'path' => 'logs', 'baseAlias' => 'data'],
+                ['alias' => 'modules', 'path' => 'modules', 'baseAlias' => 'src']
             ]
         ];
 
@@ -175,7 +223,7 @@ describe('Initialization', function () {
     });
 
     it('handles partial config', function () {
-        Via::init(['bases' => [['role' => 'data', 'path' => 'data']]]);
+        Via::init(['bases' => [['alias' => 'data', 'path' => 'data']]]);
 
         expect(Via::f('rel.data'))->toBe('/data');
         expect(Via::getLocalPath())->toBeNull();
@@ -223,13 +271,13 @@ describe('Path Retrieval', function () {
 
     it('validates path format', function () {
         expect(fn () => Via::f('invalid'))
-            ->toThrow(\InvalidArgumentException::class, 'Path must contain at least type and role');
+            ->toThrow(\InvalidArgumentException::class, 'Path must contain at least type and alias');
 
-        expect(fn () => Via::f('invalid.type.role'))
+        expect(fn () => Via::f('invalid.type.alias'))
             ->toThrow(\InvalidArgumentException::class, "Invalid path type 'invalid'. Must be 'rel', 'local', or 'host'");
     });
 
-    it('validates role exists', function () {
+    it('validates alias exists', function () {
         expect(fn () => Via::f('rel.nonexistent'))
             ->toThrow(\InvalidArgumentException::class, "Role 'nonexistent' must be a base. Assignments must be accessed via base.assignment format");
     });
@@ -327,7 +375,7 @@ describe('Cross-Platform Path Handling', function () {
 
     it('handles multi-level paths with forward slashes', function () {
         Via::assignToBase('coremods', 'core/modules', 'src');
-        
+
         expect(Via::f('rel.src.coremods'))->toBe('/src/core/modules');
         expect(Via::f('local.src.coremods'))->toBe('/Users/test/project/src/core/modules');
     });
@@ -335,14 +383,14 @@ describe('Cross-Platform Path Handling', function () {
     it('handles multi-level paths with mixed separators', function () {
         // Test with various path separators that might come from different sources
         Via::assignToBase('deeppath', 'level1\level2/level3', 'src');
-        
+
         expect(Via::f('rel.src.deeppath'))->toBe('/src/level1/level2/level3');
         expect(Via::f('local.src.deeppath'))->toBe('/Users/test/project/src/level1/level2/level3');
     });
 
     it('canonicalizes paths with redundant separators', function () {
         Via::assignToBase('messypath', 'dir1\/\dir2/../dir2/dir3', 'src');
-        
+
         expect(Via::f('rel.src.messypath'))->toBe('/src/dir1/dir2/dir3');
         expect(Via::f('local.src.messypath'))->toBe('/Users/test/project/src/dir1/dir2/dir3');
     });
@@ -350,7 +398,7 @@ describe('Cross-Platform Path Handling', function () {
     it('handles base paths with various separators', function () {
         Via::setBase('assets', 'public\assets');
         Via::assignToBase('images', 'img\gallery', 'assets');
-        
+
         expect(Via::f('rel.assets.images'))->toBe('/public/assets/img/gallery');
     });
 });
