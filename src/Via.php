@@ -288,6 +288,6 @@ class Via
         }
 
         $relativePath = self::buildRelativePath($role, $subParts);
-        return '://' . self::$host . $relativePath;
+        return self::$host . $relativePath;
     }
 }

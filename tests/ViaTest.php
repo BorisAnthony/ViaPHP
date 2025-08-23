@@ -34,19 +34,19 @@ describe('Via Static Class', function () {
         expect($all['data'])->toBe([
             'rel' => '/data',
             'local' => '/Users/test/project/data',
-            'host' => '://example.com/data'
+            'host' => 'example.com/data'
         ]);
         
         expect($all['data.logs'])->toBe([
             'rel' => '/data/logs',
             'local' => '/Users/test/project/data/logs',
-            'host' => '://example.com/data/logs'
+            'host' => 'example.com/data/logs'
         ]);
         
         expect($all['src.components'])->toBe([
             'rel' => '/src/components',
             'local' => '/Users/test/project/src/components',
-            'host' => '://example.com/src/components'
+            'host' => 'example.com/src/components'
         ]);
     });
 
@@ -171,7 +171,7 @@ describe('Initialization', function () {
         expect(Via::f('rel.data'))->toBe('/data');
         expect(Via::f('rel.data.logs'))->toBe('/data/logs');
         expect(Via::f('local.data.logs'))->toBe('/Users/test/project/data/logs');
-        expect(Via::f('host.data.logs'))->toBe('://test.local/data/logs');
+        expect(Via::f('host.data.logs'))->toBe('test.local/data/logs');
     });
 
     it('handles partial config', function () {
@@ -207,9 +207,9 @@ describe('Path Retrieval', function () {
     });
 
     it('retrieves host paths', function () {
-        expect(Via::f('host.data'))->toBe('://example.com/data');
-        expect(Via::f('host.data.logs'))->toBe('://example.com/data/logs');
-        expect(Via::f('host.src.frontend_js'))->toBe('://example.com/src/frontend/js');
+        expect(Via::f('host.data'))->toBe('example.com/data');
+        expect(Via::f('host.data.logs'))->toBe('example.com/data/logs');
+        expect(Via::f('host.src.frontend_js'))->toBe('example.com/src/frontend/js');
     });
 
     it('handles configured nested paths properly', function () {
@@ -218,7 +218,7 @@ describe('Path Retrieval', function () {
 
         expect(Via::f('rel.data.subdir'))->toBe('/data/subdir');
         expect(Via::f('local.data.subdir'))->toBe('/Users/test/project/data/subdir');
-        expect(Via::f('host.data.subdir'))->toBe('://example.com/data/subdir');
+        expect(Via::f('host.data.subdir'))->toBe('example.com/data/subdir');
     });
 
     it('validates path format', function () {
@@ -273,7 +273,7 @@ describe('Strict Path Validation', function () {
 
         expect(Via::f('rel.logs.error_logs'))->toBe('/logs/errors');
         expect(Via::f('local.src.ui_components'))->toBe('/Users/test/project/src/ui');
-        expect(Via::f('host.logs.error_logs'))->toBe('://example.com/logs/errors');
+        expect(Via::f('host.logs.error_logs'))->toBe('example.com/logs/errors');
     });
 
     it('rejects arbitrary path segments', function () {
