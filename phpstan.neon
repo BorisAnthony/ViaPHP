@@ -1,0 +1,14 @@
+includes:
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+parameters:
+    level: 7
+    treatPhpDocTypesAsCertain: false
+    paths:
+        - ./src
+        - ./tests
+    excludePaths:
+        #analyse:
+        #    - src/thirdparty
+        analyseAndScan:
+            - ./tests
+            - ./vendor

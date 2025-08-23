@@ -1,0 +1,62 @@
+{
+  "name": "borisanthony/viaphp",
+  "description": "PHP 8.3+ utility library for setting and retrieving system paths",
+  "type": "library",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Boris Anthony",
+      "email": "boris@anthony.net"
+    }
+  ],
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    },
+    "apcu-autoloader": true,
+    "optimize-autoloader": true,
+    "sort-packages": true
+  },
+  "autoload": {
+    "psr-4": {
+      "Via\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ViaTests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^8.3",
+    "symfony/filesystem": "^7.3",
+    "dflydev/dot-access-data": "^3.0"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.86",
+    "pestphp/pest": "^3.8",
+    "phpstan/phpstan": "^2.1",
+    "rector/rector": "^2.1",
+    "symfony/var-dumper": "^7.3"
+  },
+  "keywords": [
+    "utilities",
+    "paths",
+    "aliases",
+    "php8",
+    "helper"
+  ],
+  "scripts": {
+    "cs": "export PHP_CS_FIXER_IGNORE_ENV=1 php; php-cs-fixer fix --dry-run",
+    "cs:fix": "export PHP_CS_FIXER_IGNORE_ENV=1 php; php-cs-fixer fix",
+    "stan": "phpstan analyse",
+    "post-update-cmd": [
+      "composer dump-autoload -o"
+    ],
+    "post-install-cmd": [
+      "composer dump-autoload -o"
+    ],
+    "test": "./vendor/bin/pest"
+  }
+}
