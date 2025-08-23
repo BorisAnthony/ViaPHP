@@ -32,6 +32,59 @@ class Via
         self::$host = null;
     }
 
+    /**
+     * Get all configured path aliases with their resolved paths
+     * 
+     * @return array<string, array{rel: string, local?: string, host?: string}>
+     */
+    public static function all(): array
+    {
+        self::initData();
+        
+        $result = [];
+        
+        // Get all bases
+        $bases = self::$data->get('bases', []);
+        foreach ($bases as $baseRole => $_) {
+            $result[$baseRole] = [
+                'rel' => self::f("rel.{$baseRole}")
+            ];
+            
+            // Add local path if available
+            if (self::$localPath !== null) {
+                $result[$baseRole]['local'] = self::f("local.{$baseRole}");
+            }
+            
+            // Add host path if available
+            if (self::$host !== null) {
+                $result[$baseRole]['host'] = self::f("host.{$baseRole}");
+            }
+        }
+        
+        // Get all assignments
+        $assignments = self::$data->get('assignments', []);
+        foreach ($assignments as $assignmentRole => $assignmentData) {
+            $baseRole = $assignmentData['baseRole'];
+            $fullAlias = "{$baseRole}.{$assignmentRole}";
+            
+            $result[$fullAlias] = [
+                'rel' => self::f("rel.{$fullAlias}")
+            ];
+            
+            // Add local path if available
+            if (self::$localPath !== null) {
+                $result[$fullAlias]['local'] = self::f("local.{$fullAlias}");
+            }
+            
+            // Add host path if available
+            if (self::$host !== null) {
+                $result[$fullAlias]['host'] = self::f("host.{$fullAlias}");
+            }
+        }
+        
+        return $result;
+    }
+
     public static function setLocalPath(string $path): void
     {
         self::$localPath = Path::canonicalize($path);

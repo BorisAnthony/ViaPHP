@@ -172,6 +172,9 @@ echo "- Controllers: " . Via::f('rel.app.controllers') . "\n";
 // Note: For nested paths, we use the proper hierarchy
 echo "- Assets URL: " . Via::f('host.web.assets') . "\n\n";
 
+print_r(Via::all());
+
+
 // Example 9: Practical Use Cases
 echo "9. Practical Use Cases\n";
 echo "---------------------\n";
@@ -230,6 +233,27 @@ Via::assignToBase('deepnest', 'components\\ui//forms/../forms/inputs', 'src');
 echo "- Deep nested path: " . Via::f('rel.src.deepnest') . "\n";
 
 echo "\nAll paths are normalized using Symfony's Path class for cross-OS compatibility!\n\n";
+
+// Example 11: Introspection with all() method
+echo "11. Introspection with all() Method\n";
+echo "-----------------------------------\n";
+
+Via::setLocalPath('/Users/demo/myapp');
+Via::setHost('myapp.local');
+Via::setBase('data', 'data');
+Via::setBase('public', 'public');
+Via::assignToBase('uploads', 'uploads', 'data');
+Via::assignToBase('assets', 'assets', 'public');
+
+echo "All configured paths:\n";
+$allPaths = Via::all();
+foreach ($allPaths as $alias => $paths) {
+    echo "- {$alias}:\n";
+    foreach ($paths as $type => $path) {
+        echo "  {$type}: {$path}\n";
+    }
+}
+echo "\n";
 
 echo "=== Examples Complete ===\n";
 

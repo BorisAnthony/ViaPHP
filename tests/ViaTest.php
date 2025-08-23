@@ -18,6 +18,47 @@ describe('Via Static Class', function () {
         Via::setHost('example.com');
         expect(Via::getHost())->toBe('example.com');
     });
+
+    it('returns all configured aliases with all() method', function () {
+        Via::setLocalPath('/Users/test/project');
+        Via::setHost('example.com');
+        Via::setBase('data', 'data');
+        Via::setBase('src', 'src');
+        Via::assignToBase('logs', 'logs', 'data');
+        Via::assignToBase('components', 'components', 'src');
+
+        $all = Via::all();
+
+        expect($all)->toHaveKeys(['data', 'src', 'data.logs', 'src.components']);
+        
+        expect($all['data'])->toBe([
+            'rel' => '/data',
+            'local' => '/Users/test/project/data',
+            'host' => '://example.com/data'
+        ]);
+        
+        expect($all['data.logs'])->toBe([
+            'rel' => '/data/logs',
+            'local' => '/Users/test/project/data/logs',
+            'host' => '://example.com/data/logs'
+        ]);
+        
+        expect($all['src.components'])->toBe([
+            'rel' => '/src/components',
+            'local' => '/Users/test/project/src/components',
+            'host' => '://example.com/src/components'
+        ]);
+    });
+
+    it('returns only rel paths when local/host not set', function () {
+        Via::setBase('data', 'data');
+        Via::assignToBase('logs', 'logs', 'data');
+
+        $all = Via::all();
+
+        expect($all['data'])->toBe(['rel' => '/data']);
+        expect($all['data.logs'])->toBe(['rel' => '/data/logs']);
+    });
 });
 
 describe('Local Path and Host Management', function () {
