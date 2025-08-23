@@ -1,12 +1,22 @@
 # ViaPHP
 
-A PHP library for setting and retrieving filesystem paths in your project.
+Via is a path alias management library.
 
-ViaPHP provides a singleton static class for setting nested system paths for easy access throughout your codebase, without hardcoding them all and passing around arrays or constsants.
+It provides a static class for setting shorthand, dot-notation aliases to paths for easy access throughout your codebase, without hardcoding them all and passing around arrays or constants.
+
+Given your project's full root path, and a hostname/IP, Via gives you access to system root, project root and URL root paths.
+
+e.g.:
+```
+Via::p('host.data.logs') // '//local.test/data/logs'
+Via::p('local.data.logs') // '/Users/me/Projects/foo/data/logs'
+Via::p('rel.data.logs') // '/data/logs'
+```
+
+Paths are sanitized and canonicalized by Symfony's Filesystem component (`Path::class`), and dot-notation is enabled by 
+
 
 ## Usage
-
-### Initialization
 
 
 ### Setting & Assigning
