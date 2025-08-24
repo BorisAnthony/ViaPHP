@@ -51,7 +51,7 @@ echo '$cssUrl = via(\'host.public.assets\', \'styles/main.css\');' . "\n";
 echo '$logoPath = via(\'local.data.uploads\', \'images/logo.png\');' . "\n";
 echo "?>\n\n";
 
-$cssUrl = via('host.public.assets', 'styles/main.css');
+$cssUrl   = via('host.public.assets', 'styles/main.css');
 $logoPath = via('local.data.uploads', 'images/logo.png');
 
 echo "Results:\n";
@@ -86,17 +86,17 @@ Via::assignToBases([
 echo "The global function supports additional path parameters too:\n\n";
 
 // File operations
-$errorLog = via('local.data.logs', 'errors/' . date('Y-m-d') . '.log');
+$errorLog   = via('local.data.logs', 'errors/' . date('Y-m-d') . '.log');
 $userAvatar = via('local.data.user_files', 'avatars/user_123.jpg');
 $configFile = via('rel.data', 'config/app.json');
 
 echo "File operations:\n";
 echo "- Error log: {$errorLog}\n";
-echo "- User avatar: {$userAvatar}\n";  
+echo "- User avatar: {$userAvatar}\n";
 echo "- Config file: {$configFile}\n\n";
 
 // URL generation
-$jsAsset = via('host.public.assets', 'js/app.min.js');
+$jsAsset     = via('host.public.assets', 'js/app.min.js');
 $apiEndpoint = via('host.src.components', 'api/UserController.php');
 
 echo "URL generation:\n";
@@ -121,7 +121,7 @@ echo '    <img src="' . via('host.data.user_files', 'avatars/default.png') . '" 
 echo "</body>\n";
 echo "</html>\n\n";
 
-// Example 6: PHP Include/Require Simulation  
+// Example 6: PHP Include/Require Simulation
 echo "6. PHP Include/Require Simulation\n";
 echo "---------------------------------\n";
 
@@ -154,7 +154,7 @@ try {
 
 try {
     $invalidPath = via('local.src.invalid.nested');
-    echo "This shouldn't print\n"; 
+    echo "This shouldn't print\n";
 } catch (\InvalidArgumentException $e) {
     echo "- ✗ Invalid nested path caught: " . $e->getMessage() . "\n";
 }
@@ -189,20 +189,20 @@ Via::assignToBases([
 ]);
 
 echo "Configuration files:\n";
-$dbConfig = via('local.data', 'config/database.php');
+$dbConfig  = via('local.data', 'config/database.php');
 $appConfig = via('local.data', 'config/app.php');
 echo "- DB config: {$dbConfig}\n";
 echo "- App config: {$appConfig}\n\n";
 
-echo "Runtime files:\n"; 
-$cacheFile = via('local.data.cache', 'views/' . md5('homepage') . '.cache');
+echo "Runtime files:\n";
+$cacheFile   = via('local.data.cache', 'views/' . md5('homepage') . '.cache');
 $sessionFile = via('local.data.sessions', 'sess_' . session_id());
 echo "- Cache file: {$cacheFile}\n";
 echo "- Session file: {$sessionFile}\n\n";
 
 echo "Template rendering:\n";
 $mailTemplate = via('local.src.mail_templates', 'welcome.html');
-$userWelcome = via('local.src.mail_templates', 'users/activation.html');
+$userWelcome  = via('local.src.mail_templates', 'users/activation.html');
 echo "- Mail template: {$mailTemplate}\n";
 echo "- User template: {$userWelcome}\n\n";
 
@@ -220,4 +220,136 @@ echo "- Safe to use in any context where Via class is available\n\n";
 echo "Function exists: " . (function_exists('via') ? 'Yes' : 'No') . "\n";
 echo "Function callable: " . (is_callable('via') ? 'Yes' : 'No') . "\n\n";
 
-echo "=== Global Function Examples Complete ===\n";
+// Example 11: Shorthand Methods and Additional Global Functions
+echo "11. Shorthand Methods and Additional Global Functions\n";
+echo "----------------------------------------------------\n";
+
+echo "ViaPHP provides shorthand methods for even more concise code:\n\n";
+
+Via::setLocal('/Users/demo/shorthand-test');
+Via::setHost('shorthand.local');
+
+echo "Class shorthand methods:\n";
+echo "- Via::l() instead of Via::getLocal(): " . Via::l() . "\n";
+echo "- Via::h() instead of Via::getHost(): " . Via::h() . "\n\n";
+
+echo "Global functions for ultimate brevity:\n";
+echo "- via_local() instead of Via::getLocal(): " . via_local() . "\n";
+echo "- via_host() instead of Via::getHost(): " . via_host() . "\n\n";
+
+echo "All methods are equivalent:\n";
+$localPath1 = Via::getLocal();
+$localPath2 = Via::l();
+$localPath3 = via_local();
+
+$hostPath1 = Via::getHost();
+$hostPath2 = Via::h();
+$hostPath3 = via_host();
+
+echo "- Via::getLocal(): {$localPath1}\n";
+echo "- Via::l(): {$localPath2}\n";
+echo "- via_local(): {$localPath3}\n";
+echo "- All local paths identical: " . ($localPath1 === $localPath2 && $localPath2 === $localPath3 ? 'Yes' : 'No') . "\n\n";
+
+echo "- Via::getHost(): {$hostPath1}\n";
+echo "- Via::h(): {$hostPath2}\n";
+echo "- via_host(): {$hostPath3}\n";
+echo "- All host paths identical: " . ($hostPath1 === $hostPath2 && $hostPath2 === $hostPath3 ? 'Yes' : 'No') . "\n\n";
+
+// Example 12: Template Usage with All Global Functions
+echo "12. Complete Template Usage Example\n";
+echo "----------------------------------\n";
+
+echo "Perfect for templates where you want maximum brevity:\n\n";
+
+Via::setBases([
+    ['assets', 'public/assets'],
+    ['uploads', 'storage/uploads']
+]);
+
+Via::assignToBases([
+    ['css', 'css', 'assets'],
+    ['js', 'js', 'assets'],
+    ['images', 'images', 'uploads']
+]);
+
+echo "HTML template with all global functions:\n\n";
+
+echo "<!DOCTYPE html>\n";
+echo "<html>\n";
+echo "<head>\n";
+echo '    <base href="//'. via_host() . '/">' . "\n";
+echo '    <link rel="stylesheet" href="' . via('host.assets.css', 'main.css') . '">' . "\n";
+echo '    <script src="' . via('host.assets.js', 'app.min.js') . '"></script>' . "\n";
+echo "</head>\n";
+echo "<body>\n";
+echo '    <!-- Local filesystem operations -->' . "\n";
+echo '    <?php include "' . via('local.assets.js', 'config.php') . '"; ?>' . "\n";
+echo '    ' . "\n";
+echo '    <!-- URL generation -->' . "\n";
+echo '    <img src="' . via('host.uploads.images', 'banner.jpg') . '" alt="Banner">' . "\n";
+echo '    ' . "\n";
+echo '    <!-- Configuration info -->' . "\n";
+echo '    <!-- Local path: ' . via_local() . ' -->' . "\n";
+echo '    <!-- Host: ' . via_host() . ' -->' . "\n";
+echo "</body>\n";
+echo "</html>\n\n";
+
+// Example 13: PHP Configuration File Example
+echo "13. PHP Configuration File Example\n";
+echo "----------------------------------\n";
+
+echo "<?php\n";
+echo "// Configuration using global functions\n";
+echo '$config = [' . "\n";
+echo '    \'local_path\' => via_local(),' . "\n";
+echo '    \'host\' => via_host(),' . "\n";
+echo '    \'assets_url\' => via(\'host.assets\'),' . "\n";
+echo '    \'uploads_path\' => via(\'local.uploads\'),' . "\n";
+echo '    \'css_path\' => via(\'local.assets.css\'),' . "\n";
+echo "];'\n\n";
+
+// Show actual execution
+$config = [
+    'local_path'   => via_local(),
+    'host'         => via_host(),
+    'assets_url'   => via('host.assets'),
+    'uploads_path' => via('local.uploads'),
+    'css_path'     => via('local.assets.css'),
+];
+
+echo "Actual config array generated:\n";
+foreach ($config as $key => $value) {
+    echo "- {$key}: {$value}\n";
+}
+echo "\n";
+
+// Example 14: Error Handling and Null Safety
+echo "14. Error Handling and Null Safety\n";
+echo "----------------------------------\n";
+
+Via::reset();
+
+echo "Global functions handle null states safely:\n";
+echo "- via_local() when not set: " . (via_local() ?? 'NULL') . "\n";
+echo "- via_host() when not set: " . (via_host() ?? 'NULL') . "\n";
+echo "- Via::l() when not set: " . (Via::l() ?? 'NULL') . "\n";
+echo "- Via::h() when not set: " . (Via::h() ?? 'NULL') . "\n\n";
+
+echo "Conditional usage in templates:\n";
+echo "<?php\n";
+echo 'if (via_local()) {' . "\n";
+echo '    echo "Local path configured: " . via_local();' . "\n";
+echo '}' . "\n";
+echo 'if (via_host()) {' . "\n";
+echo '    echo "Host configured: " . via_host();' . "\n";
+echo '}' . "\n";
+echo "?>\n\n";
+
+echo "Function availability checks:\n";
+$functions = ['via', 'via_local', 'via_host'];
+foreach ($functions as $func) {
+    echo "- {$func}(): " . (function_exists($func) ? 'Available' : 'Not available') . "\n";
+}
+
+echo "\n=== Global Function Examples Complete ===\n";

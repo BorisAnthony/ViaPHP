@@ -40,6 +40,13 @@ So you would do something like:
 Via::setLocal(path: __DIR__); // if you're calling this from the project root.
 ```
 
+You can retrieve the current local path with:
+```
+Via::getLocal(); // Returns: '/User/me/Projects/foo'
+Via::l();        // Shorthand method - same result
+via_local();     // Global function - same result
+```
+
 #### Host Domain
 The domain/hostname/IP addreess, for absolute URL paths
 
@@ -47,6 +54,13 @@ The domain/hostname/IP addreess, for absolute URL paths
 Via::setHost(host: "foo.local.test");
 ```
 Here too, you will want to set this dynamically somehow based on the context.
+
+You can retrieve the current host with:
+```
+Via::getHost();  // Returns: 'foo.local.test'
+Via::h();        // Shorthand method - same result
+via_host();      // Global function - same result
+```
 
 
 #### Set Base
@@ -128,20 +142,46 @@ Paths are accessed using dot-notation, and assembled at retrieval time (lazy loa
 
 The accessing method is `Via::get()` but a `Via::p()` (read: "Via path") forwarder is provided for convenient shorthand notation. ( *I use `Via::p()` myself.* )
 
+For even more convenience in templates and view files, a global `via()` function is also available:
 
 ```
-Via::p('rel.data.logs');   // (string) '/data/logs'
-Via::p('local.data.logs'); // (string) '/User/me/Projects/foo/data/logs'
-Via::p('host.data.logs');  // (string) '://foo.local.test/data/logs'
+Via::get('rel.data.logs');  // (string) '/data/logs'
+Via::p('rel.data.logs');    // (string) '/data/logs' - same as above
+via('rel.data.logs');       // (string) '/data/logs' - global function
 
-Via::p('rel.src');   // (string) '/src'
-Via::p('local.src'); // (string) '/User/me/Projects/foo/src'
-Via::p('host.src');  // (string) '://foo.local.test/src'
+Via::p('local.data.logs');  // (string) '/User/me/Projects/foo/data/logs'
+Via::p('host.data.logs');   // (string) '://foo.local.test/data/logs'
+
+Via::p('rel.src');          // (string) '/src'
+Via::p('local.src');        // (string) '/User/me/Projects/foo/src'
+Via::p('host.src');         // (string) '://foo.local.test/src'
 
 Via::p('rel.src.frontend_js');   // (string) '/src/frontend/js'
 Via::p('local.src.frontend_js'); // (string) '/User/me/Projects/foo/src/frontend/js'
 Via::p('host.src.frontend_js');  // (string) '://foo.local.test/src/frontend/js'
 ```
+
+#### Dynamic Path Appending
+
+Both `get()`, `p()`, and the global `via()` function accept an optional second parameter to append additional path segments:
+
+```
+Via::p('rel.data', 'config/settings.json');        // '/data/config/settings.json'
+Via::p('local.src', 'utils/helpers.php');          // '/User/me/Projects/foo/src/utils/helpers.php'
+via('host.images', 'gallery/photo.jpg');           // '://foo.local.test/images/gallery/photo.jpg'
+```
+
+#### Global Functions
+
+For ultimate convenience, especially in templates, three global functions are available:
+
+```
+via('rel.data.logs');                    // Path retrieval
+via_local();                             // Get local filesystem root
+via_host();                              // Get host domain
+```
+
+These global functions are automatically available when you include the ViaPHP package via Composer's autoloader.
 
 ---
 

@@ -28,7 +28,7 @@ class Via
     public static function reset(): void
     {
         self::$data      = null;
-        self::$local = null;
+        self::$local     = null;
         self::$host      = null;
     }
 
@@ -90,19 +90,29 @@ class Via
         self::$local = Path::canonicalize($path);
     }
 
-    public static function setHost(string $host): void
-    {
-        self::$host = $host;
-    }
-
     public static function getLocal(): ?string
     {
         return self::$local;
     }
 
+    public static function l(): ?string
+    {
+        return self::getLocal();
+    }
+
+    public static function setHost(string $host): void
+    {
+        self::$host = $host;
+    }
+
     public static function getHost(): ?string
     {
         return self::$host;
+    }
+
+    public static function h(): ?string
+    {
+        return self::getHost();
     }
 
     public static function setBase(string $alias, string $path): void

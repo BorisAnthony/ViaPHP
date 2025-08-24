@@ -190,7 +190,7 @@ echo "-------------------------------------\n";
 Via::reset();
 
 $config = [
-    'Local'      => '/Users/me/Projects/ecommerce',
+    'Local'          => '/Users/me/Projects/ecommerce',
     'absoluteDomain' => 'shop.example.com',
     'bases'          => [
         ['data', 'data'],           // Positional format

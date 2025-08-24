@@ -84,6 +84,23 @@ describe('Local Path and Host Management', function () {
         expect(Via::getLocal())->toBeNull();
         expect(Via::getHost())->toBeNull();
     });
+
+    it('provides shorthand methods for getLocal and getHost', function () {
+        Via::setLocal('/test/project');
+        Via::setHost('test.example.com');
+
+        expect(Via::l())->toBe('/test/project');
+        expect(Via::h())->toBe('test.example.com');
+
+        // Verify they return the same as full method names
+        expect(Via::l())->toBe(Via::getLocal());
+        expect(Via::h())->toBe(Via::getHost());
+    });
+
+    it('shorthand methods return null when not set', function () {
+        expect(Via::l())->toBeNull();
+        expect(Via::h())->toBeNull();
+    });
 });
 
 describe('Base Management', function () {
@@ -200,7 +217,7 @@ describe('Assignment Management', function () {
 describe('Initialization', function () {
     it('initializes with full config', function () {
         $config = [
-            'Local'      => '/Users/test/project',
+            'Local'          => '/Users/test/project',
             'absoluteDomain' => 'test.local',
             'bases'          => [
                 ['alias' => 'data', 'path' => 'data'],
