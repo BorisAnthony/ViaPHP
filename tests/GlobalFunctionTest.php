@@ -17,7 +17,7 @@ describe('Global via() function', function () {
     });
 
     it('forwards to Via::get() with single parameter', function () {
-        Via::setLocalPath('/project');
+        Via::setLocal('/project');
         Via::setBase('data', '/var/data');
         
         expect(via('local.data'))->toBe('/project/var/data');
@@ -25,7 +25,7 @@ describe('Global via() function', function () {
     });
 
     it('forwards to Via::get() with additional path parameter', function () {
-        Via::setLocalPath('/project');
+        Via::setLocal('/project');
         Via::setBase('logs', '/var/logs');
         
         expect(via('local.logs', 'error/today.log'))->toBe('/project/var/logs/error/today.log');
@@ -33,7 +33,7 @@ describe('Global via() function', function () {
     });
 
     it('works with all path types', function () {
-        Via::setLocalPath('/project');
+        Via::setLocal('/project');
         Via::setHost('example.com');
         Via::setBases([
             ['data', '/var/data'],
@@ -46,7 +46,7 @@ describe('Global via() function', function () {
     });
 
     it('works in template-like contexts', function () {
-        Via::setLocalPath('/project');
+        Via::setLocal('/project');
         Via::setBases([['assets', '/public/assets']]);
         Via::assignToBases([['css', '/styles', 'assets']]);
 

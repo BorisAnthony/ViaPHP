@@ -15,7 +15,7 @@ echo "Perfect for template files and contexts where brevity is preferred.\n\n";
 echo "1. Basic Setup and Global Function Usage\n";
 echo "---------------------------------------\n";
 
-Via::setLocalPath('/Users/demo/myapp');
+Via::setLocal('/Users/demo/myapp');
 Via::setHost('myapp.local');
 Via::setBases([
     ['data', 'data'],

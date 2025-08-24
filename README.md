@@ -28,7 +28,7 @@ Paths are sanitized and canonicalized by Symfony's Filesystem component (`Path::
 The absolute local filesystem path of the project, used for absolute filesystem paths.
 
 ```
-Via::setLocalPath(path: "/User/me/Projects/foo");
+Via::setLocal(path: "/User/me/Projects/foo");
 ```
 
 In real world usage, this would be populated dynamically, based on the system.
@@ -37,7 +37,7 @@ I.e.: the local system's full path will be different on local development and va
 So you would do something like:
 
 ```
-Via::setLocalPath(path: __DIR__); // if you're calling this from the project root.
+Via::setLocal(path: __DIR__); // if you're calling this from the project root.
 ```
 
 #### Host Domain
@@ -99,12 +99,12 @@ Via::assignToBases(
 #### Init
 
 Set and Assign a whole config of bases and assignments from a given array.
-(Calls `self::setLocalPath()`, `self::setHost()`, `self::setBases()` and `self:assignToBases()` internally as needed)
+(Calls `self::setLocal()`, `self::setHost()`, `self::setBases()` and `self:assignToBases()` internally as needed)
 
 ```
 Via::init(
     [
-        "LocalPath" => "/User/me/Projects/foo",
+        "Local" => "/User/me/Projects/foo",
         "absoluteDomain" => "foo.local.test",
         "bases" => [
             [alias => "data", path => "data"],

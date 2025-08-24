@@ -11,7 +11,7 @@ class Via
 {
     private static ?Data $data = null;
 
-    private static ?string $localPath = null;
+    private static ?string $local = null;
 
     private static ?string $host = null;
 
@@ -28,7 +28,7 @@ class Via
     public static function reset(): void
     {
         self::$data      = null;
-        self::$localPath = null;
+        self::$local = null;
         self::$host      = null;
     }
 
@@ -51,7 +51,7 @@ class Via
             ];
 
             // Add local path if available
-            if (self::$localPath !== null) {
+            if (self::$local !== null) {
                 $result[$baseAlias]['local'] = self::get("local.{$baseAlias}");
             }
 
@@ -72,7 +72,7 @@ class Via
             ];
 
             // Add local path if available
-            if (self::$localPath !== null) {
+            if (self::$local !== null) {
                 $result[$fullAlias]['local'] = self::get("local.{$fullAlias}");
             }
 
@@ -85,9 +85,9 @@ class Via
         return $result;
     }
 
-    public static function setLocalPath(string $path): void
+    public static function setLocal(string $path): void
     {
-        self::$localPath = Path::canonicalize($path);
+        self::$local = Path::canonicalize($path);
     }
 
     public static function setHost(string $host): void
@@ -95,9 +95,9 @@ class Via
         self::$host = $host;
     }
 
-    public static function getLocalPath(): ?string
+    public static function getLocal(): ?string
     {
-        return self::$localPath;
+        return self::$local;
     }
 
     public static function getHost(): ?string
@@ -169,12 +169,12 @@ class Via
     }
 
     /**
-     * @param array{LocalPath?: string, absoluteDomain?: string, bases?: array<array{alias: string, path: string}|array{0: string, 1: string}>, assignments?: array<array{alias: string, path: string, baseAlias: string}|array{0: string, 1: string, 2: string}>} $config
+     * @param array{Local?: string, absoluteDomain?: string, bases?: array<array{alias: string, path: string}|array{0: string, 1: string}>, assignments?: array<array{alias: string, path: string, baseAlias: string}|array{0: string, 1: string, 2: string}>} $config
      */
     public static function init(array $config): void
     {
-        if (isset($config['LocalPath'])) {
-            self::setLocalPath($config['LocalPath']);
+        if (isset($config['Local'])) {
+            self::setLocal($config['Local']);
         }
 
         if (isset($config['absoluteDomain'])) {
@@ -213,7 +213,7 @@ class Via
             case 'rel':
                 return self::buildRelativePath($alias, $subParts, $additionalPath);
             case 'local':
-                return self::buildLocalPath($alias, $subParts, $additionalPath);
+                return self::buildLocal($alias, $subParts, $additionalPath);
             case 'host':
                 return self::buildHostPath($alias, $subParts, $additionalPath);
             default:
@@ -307,14 +307,14 @@ class Via
     /**
      * @param array<string> $subParts
      */
-    private static function buildLocalPath(string $alias, array $subParts, ?string $additionalPath = null): string
+    private static function buildLocal(string $alias, array $subParts, ?string $additionalPath = null): string
     {
-        if (self::$localPath === null) {
-            throw new \RuntimeException('Local path not set. Call setLocalPath() first.');
+        if (self::$local === null) {
+            throw new \RuntimeException('Local path not set. Call setLocal() first.');
         }
 
         $relativePath = self::buildRelativePath($alias, $subParts, $additionalPath);
-        return Path::join(self::$localPath, ltrim($relativePath, '/'));
+        return Path::join(self::$local, ltrim($relativePath, '/'));
     }
 
     /**

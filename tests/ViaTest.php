@@ -12,15 +12,15 @@ beforeEach(function () {
 
 describe('Via Static Class', function () {
     it('works as a static class', function () {
-        Via::setLocalPath('/test/path');
-        expect(Via::getLocalPath())->toBe('/test/path');
+        Via::setLocal('/test/path');
+        expect(Via::getLocal())->toBe('/test/path');
 
         Via::setHost('example.com');
         expect(Via::getHost())->toBe('example.com');
     });
 
     it('returns all configured aliases with all() method', function () {
-        Via::setLocalPath('/Users/test/project');
+        Via::setLocal('/Users/test/project');
         Via::setHost('example.com');
         Via::setBase('data', 'data');
         Via::setBase('src', 'src');
@@ -63,15 +63,15 @@ describe('Via Static Class', function () {
 
 describe('Local Path and Host Management', function () {
     it('sets and gets local path', function () {
-        Via::setLocalPath('/Users/test/project');
+        Via::setLocal('/Users/test/project');
 
-        expect(Via::getLocalPath())->toBe('/Users/test/project');
+        expect(Via::getLocal())->toBe('/Users/test/project');
     });
 
     it('canonicalizes local path', function () {
-        Via::setLocalPath('/Users/test/../test/project/./');
+        Via::setLocal('/Users/test/../test/project/./');
 
-        expect(Via::getLocalPath())->toBe('/Users/test/project');
+        expect(Via::getLocal())->toBe('/Users/test/project');
     });
 
     it('sets and gets host', function () {
@@ -81,7 +81,7 @@ describe('Local Path and Host Management', function () {
     });
 
     it('returns null when paths not set', function () {
-        expect(Via::getLocalPath())->toBeNull();
+        expect(Via::getLocal())->toBeNull();
         expect(Via::getHost())->toBeNull();
     });
 });
@@ -200,7 +200,7 @@ describe('Assignment Management', function () {
 describe('Initialization', function () {
     it('initializes with full config', function () {
         $config = [
-            'LocalPath'      => '/Users/test/project',
+            'Local'      => '/Users/test/project',
             'absoluteDomain' => 'test.local',
             'bases'          => [
                 ['alias' => 'data', 'path' => 'data'],
@@ -214,7 +214,7 @@ describe('Initialization', function () {
 
         Via::init($config);
 
-        expect(Via::getLocalPath())->toBe('/Users/test/project');
+        expect(Via::getLocal())->toBe('/Users/test/project');
         expect(Via::getHost())->toBe('test.local');
         expect(Via::p('rel.data'))->toBe('/data');
         expect(Via::p('rel.data.logs'))->toBe('/data/logs');
@@ -226,14 +226,14 @@ describe('Initialization', function () {
         Via::init(['bases' => [['alias' => 'data', 'path' => 'data']]]);
 
         expect(Via::p('rel.data'))->toBe('/data');
-        expect(Via::getLocalPath())->toBeNull();
+        expect(Via::getLocal())->toBeNull();
         expect(Via::getHost())->toBeNull();
     });
 });
 
 describe('Path Retrieval', function () {
     beforeEach(function () {
-        Via::setLocalPath('/Users/test/project');
+        Via::setLocal('/Users/test/project');
         Via::setHost('example.com');
         Via::setBase('data', 'data');
         Via::setBase('src', 'src');
@@ -283,10 +283,10 @@ describe('Path Retrieval', function () {
     });
 
     it('requires local path for local type', function () {
-        Via::reset(); // Ensure localPath is null
+        Via::reset(); // Ensure local is null
 
         expect(fn () => Via::p('local.data'))
-            ->toThrow(\RuntimeException::class, 'Local path not set. Call setLocalPath() first.');
+            ->toThrow(\RuntimeException::class, 'Local path not set. Call setLocal() first.');
     });
 
     it('requires host for host type', function () {
@@ -299,7 +299,7 @@ describe('Path Retrieval', function () {
 
 describe('Strict Path Validation', function () {
     beforeEach(function () {
-        Via::setLocalPath('/Users/test/project');
+        Via::setLocal('/Users/test/project');
         Via::setHost('example.com');
         Via::setBase('data', 'data');
         Via::setBase('src', 'src');
@@ -369,7 +369,7 @@ describe('Strict Path Validation', function () {
 
 describe('Cross-Platform Path Handling', function () {
     beforeEach(function () {
-        Via::setLocalPath('/Users/test/project');
+        Via::setLocal('/Users/test/project');
         Via::setBase('src', 'src');
     });
 
@@ -405,7 +405,7 @@ describe('Cross-Platform Path Handling', function () {
 
 describe('Additional Path Parameter', function () {
     beforeEach(function () {
-        Via::setLocalPath('/Users/test/project');
+        Via::setLocal('/Users/test/project');
         Via::setHost('example.com');
         Via::setBase('data', 'data');
         Via::setBase('src', 'src');
@@ -478,7 +478,7 @@ describe('Additional Path Parameter', function () {
         Via::setBase('data', 'data');
 
         expect(fn () => Via::p('local.data', 'file.txt'))
-            ->toThrow(\RuntimeException::class, 'Local path not set. Call setLocalPath() first.');
+            ->toThrow(\RuntimeException::class, 'Local path not set. Call setLocal() first.');
     });
 
     it('requires host for host type even with additional path', function () {

@@ -17,10 +17,10 @@ echo "- All paths are validated and normalized for cross-platform compatibility\
 echo "1. Basic Setup\n";
 echo "--------------\n";
 
-Via::setLocalPath('/Users/me/Projects/my-app');
+Via::setLocal('/Users/me/Projects/my-app');
 Via::setHost('myapp.local.test');
 
-echo "Local path set: " . Via::getLocalPath() . "\n";
+echo "Local path set: " . Via::getLocal() . "\n";
 echo "Host set: " . Via::getHost() . "\n\n";
 
 // Example 2: Setting Bases
@@ -91,7 +91,7 @@ echo "Positional arrays make configuration more concise:\n\n";
 
 // Reset for clean demo
 Via::reset();
-Via::setLocalPath('/Users/demo/myapp');
+Via::setLocal('/Users/demo/myapp');
 Via::setHost('myapp.local');
 
 echo "// Bases with positional arrays:\n";
@@ -190,7 +190,7 @@ echo "-------------------------------------\n";
 Via::reset();
 
 $config = [
-    'LocalPath'      => '/Users/me/Projects/ecommerce',
+    'Local'      => '/Users/me/Projects/ecommerce',
     'absoluteDomain' => 'shop.example.com',
     'bases'          => [
         ['data', 'data'],           // Positional format
@@ -209,7 +209,7 @@ $config = [
 Via::init($config);
 
 echo "Initialized with complete config (using mixed positional/associative arrays):\n";
-echo "- Local path: " . Via::getLocalPath() . "\n";
+echo "- Local path: " . Via::getLocal() . "\n";
 echo "- Host: " . Via::getHost() . "\n";
 echo "- Products data: " . Via::p('local.data.products') . "\n";
 echo "- Controllers: " . Via::p('rel.app.controllers') . "\n";
@@ -254,7 +254,7 @@ echo "--------------------------------\n";
 // Reset static properties for clean demo
 Via::reset();
 
-Via::setLocalPath('/Users/demo/project');
+Via::setLocal('/Users/demo/project');
 Via::setBase('src', 'src');
 
 // Demonstrate robust path handling
@@ -282,7 +282,7 @@ echo "\nAll paths are normalized using Symfony's Path class for cross-OS compati
 echo "11. Introspection with all() Method\n";
 echo "-----------------------------------\n";
 
-Via::setLocalPath('/Users/demo/myapp');
+Via::setLocal('/Users/demo/myapp');
 Via::setHost('myapp.local');
 Via::setBase('data', 'data');
 Via::setBase('public', 'public');
@@ -307,7 +307,7 @@ echo "---------------------------------------------------\n";
 
 // Reset and setup for clean demo
 Via::reset();
-Via::setLocalPath('/Users/demo/webapp');
+Via::setLocal('/Users/demo/webapp');
 Via::setHost('webapp.local');
 Via::setBases([
     ['data', 'data'],
