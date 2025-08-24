@@ -45,6 +45,11 @@ You can retrieve the current local path with:
 Via::getLocal(); // Returns: '/User/me/Projects/foo'
 Via::l();        // Shorthand method - same result
 via_local();     // Global function - same result
+
+// With additional path parameters
+Via::getLocal('config/app.php');     // Returns: '/User/me/Projects/foo/config/app.php'
+Via::l('storage/logs');              // Returns: '/User/me/Projects/foo/storage/logs'
+via_local('uploads/images');         // Returns: '/User/me/Projects/foo/uploads/images'
 ```
 
 #### Host Domain
@@ -60,6 +65,11 @@ You can retrieve the current host with:
 Via::getHost();  // Returns: 'foo.local.test'
 Via::h();        // Shorthand method - same result
 via_host();      // Global function - same result
+
+// With additional path parameters
+Via::getHost('api/users');           // Returns: 'foo.local.test/api/users'
+Via::h('assets/css');                // Returns: 'foo.local.test/assets/css'
+via_host('cdn/images');              // Returns: 'foo.local.test/cdn/images'
 ```
 
 

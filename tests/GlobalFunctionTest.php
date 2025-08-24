@@ -102,4 +102,39 @@ describe('Global via_local() and via_host() functions', function () {
         expect(via_local())->toBe('/updated/path');
         expect(via_host())->toBe('updated.com');
     });
+
+    it('via_local() and via_host() accept additional path parameters', function () {
+        Via::setLocal('/test/project');
+        Via::setHost('example.com');
+
+        expect(via_local('config/database.php'))->toBe('/test/project/config/database.php');
+        expect(via_local('uploads/images'))->toBe('/test/project/uploads/images');
+
+        expect(via_host('api/v1/users'))->toBe('example.com/api/v1/users');
+        expect(via_host('assets/styles'))->toBe('example.com/assets/styles');
+
+        // Test canonicalization
+        expect(via_local('cache/../temp//file.txt'))->toBe('/test/project/temp/file.txt');
+        expect(via_host('dir1/./dir2/../final/'))->toBe('example.com/dir1/final');
+    });
+
+    it('global functions work with null and empty additional paths', function () {
+        Via::setLocal('/test/project');
+        Via::setHost('example.com');
+
+        expect(via_local(null))->toBe('/test/project');
+        expect(via_local(''))->toBe('/test/project');
+        expect(via_host(null))->toBe('example.com');
+        expect(via_host(''))->toBe('example.com');
+    });
+
+    it('global functions forward additional paths correctly', function () {
+        Via::setLocal('/test/project');
+        Via::setHost('example.com');
+
+        $additionalPath = 'some/nested/path.txt';
+
+        expect(via_local($additionalPath))->toBe(Via::getLocal($additionalPath));
+        expect(via_host($additionalPath))->toBe(Via::getHost($additionalPath));
+    });
 });

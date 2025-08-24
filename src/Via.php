@@ -90,14 +90,18 @@ class Via
         self::$local = Path::canonicalize($path);
     }
 
-    public static function getLocal(): ?string
+    public static function getLocal(?string $additionalPath = null): ?string
     {
-        return self::$local;
+        if (self::$local === null) {
+            return null;
+        }
+
+        return self::joinPaths(self::$local, $additionalPath);
     }
 
-    public static function l(): ?string
+    public static function l(?string $additionalPath = null): ?string
     {
-        return self::getLocal();
+        return self::getLocal($additionalPath);
     }
 
     public static function setHost(string $host): void
@@ -105,21 +109,25 @@ class Via
         self::$host = $host;
     }
 
-    public static function getHost(): ?string
+    public static function getHost(?string $additionalPath = null): ?string
     {
-        return self::$host;
+        if (self::$host === null) {
+            return null;
+        }
+
+        return self::joinPaths(self::$host, $additionalPath);
     }
 
-    public static function h(): ?string
+    public static function h(?string $additionalPath = null): ?string
     {
-        return self::getHost();
+        return self::getHost($additionalPath);
     }
 
     public static function setBase(string $alias, string $path): void
     {
         self::initData();
-        $canonicalPath = Path::canonicalize($path);
-        self::$data->set("bases.{$alias}", $canonicalPath);
+        $path = Path::canonicalize($path);
+        self::$data->set("bases.{$alias}", $path);
     }
 
     /**
@@ -150,10 +158,13 @@ class Via
             throw new \InvalidArgumentException("Base alias '{$baseAlias}' does not exist");
         }
 
-        $fullPath      = Path::join($basePath, $path);
-        $canonicalPath = Path::canonicalize($fullPath);
+        // $fullPath = Path::join($basePath, $path);
+        // $fullPath = Path::canonicalize($fullPath);
+
+        $fullPath = self::joinPaths($basePath, $path);
+
         self::$data->set("assignments.{$alias}", [
-            'path'          => $canonicalPath,
+            'path'          => $fullPath,
             'baseAlias'     => $baseAlias,
             'relativePath'  => $path
         ]);
@@ -219,16 +230,12 @@ class Via
         $alias     = array_shift($parts);
         $subParts  = $parts;
 
-        switch ($type) {
-            case 'rel':
-                return self::buildRelativePath($alias, $subParts, $additionalPath);
-            case 'local':
-                return self::buildLocal($alias, $subParts, $additionalPath);
-            case 'host':
-                return self::buildHostPath($alias, $subParts, $additionalPath);
-            default:
-                throw new \InvalidArgumentException("Invalid path type '{$type}'. Must be 'rel', 'local', or 'host'");
+        // Validate path type early
+        if (!in_array($type, ['rel', 'local', 'host'], true)) {
+            throw new \InvalidArgumentException("Invalid path type '{$type}'. Must be 'rel', 'local', or 'host'");
         }
+
+        return self::buildTypedPath($type, $alias, $subParts, $additionalPath);
     }
 
     /**
@@ -247,6 +254,29 @@ class Via
     /**
      * @param array<string> $subParts
      */
+    private static function buildTypedPath(string $type, string $alias, array $subParts, ?string $additionalPath = null): string
+    {
+        // Validate required dependencies first
+        if ($type === 'local' && self::$local === null) {
+            throw new \RuntimeException('Local path not set. Call setLocal() first.');
+        }
+        if ($type === 'host' && self::$host === null) {
+            throw new \RuntimeException('Host not set. Call setHost() first.');
+        }
+
+        $relativePath = self::buildRelativePath($alias, $subParts, $additionalPath);
+
+        return match ($type) {
+            'local' => Path::join(self::$local, ltrim($relativePath, '/')),
+            'host'  => '//' . self::$host . $relativePath,
+            'rel'   => $relativePath,
+            default => throw new \LogicException("Invalid type '{$type}' - this should never happen")
+        };
+    }
+
+    /**
+     * @param array<string> $subParts
+     */
     private static function buildRelativePath(string $alias, array $subParts, ?string $additionalPath = null): string
     {
         self::initData();
@@ -254,8 +284,8 @@ class Via
         // First, check if this is a base (bases are accessed directly)
         $basePath = self::$data->get("bases.{$alias}", null);
         if ($basePath !== null) {
-            $normalizedBasePath = Path::canonicalize($basePath);
-            $fullPath           = Path::join('/', $normalizedBasePath);
+
+            $fullPath = self::joinPaths('/', $basePath);
 
             // If there are sub-parts, we need to validate the hierarchy
             if (!empty($subParts)) {
@@ -283,30 +313,27 @@ class Via
                 // Build the final path using the validated segments
                 $finalAssignment = self::$data->get("assignments.{$currentPath}", null);
                 if ($finalAssignment !== null) {
-                    $finalPath        = Path::canonicalize($finalAssignment['relativePath']);
+                    // $finalPath        = Path::canonicalize($finalAssignment['relativePath']);
+                    $finalPath        = $finalAssignment['relativePath'];
                     $finalBaseAlias   = $finalAssignment['baseAlias'];
                     $finalBasePathRaw = self::$data->get("bases.{$finalBaseAlias}", null);
                     if ($finalBasePathRaw !== null) {
-                        $finalBasePath = Path::canonicalize($finalBasePathRaw);
-                        $fullPath      = Path::join('/', $finalBasePath, $finalPath);
+
+                        $fullPath = self::joinPaths('/', $finalBasePathRaw);
+                        $fullPath = self::joinPaths($fullPath, $finalPath);
                     }
                 } else {
                     $finalBasePathRaw = self::$data->get("bases.{$currentPath}", null);
                     if ($finalBasePathRaw !== null) {
-                        $finalBasePath = Path::canonicalize($finalBasePathRaw);
-                        $fullPath      = Path::join('/', $finalBasePath);
+
+                        $fullPath = self::joinPaths('/', $finalBasePathRaw);
                     }
                 }
             }
 
-            $finalPath = Path::canonicalize($fullPath);
+            // $finalPath = Path::canonicalize($fullPath);
 
-            if ($additionalPath !== null) {
-                $canonicalAdditionalPath = Path::canonicalize($additionalPath);
-                $finalPath               = Path::join($finalPath, $canonicalAdditionalPath);
-            }
-
-            return $finalPath;
+            return self::joinPaths($fullPath, $additionalPath);
         }
 
         // If we get here, the alias is not a base, so it's invalid
@@ -315,28 +342,15 @@ class Via
     }
 
     /**
-     * @param array<string> $subParts
+     * Build a path with optional additional path appended
      */
-    private static function buildLocal(string $alias, array $subParts, ?string $additionalPath = null): string
+    private static function joinPaths(string $base, ?string $add): string
     {
-        if (self::$local === null) {
-            throw new \RuntimeException('Local path not set. Call setLocal() first.');
+        if ($add !== null && $add !== '') {
+            // $add  = Path::canonicalize($add); // join() does canonicalization so this is unnecessary
+            $base = Path::join($base, $add);
         }
 
-        $relativePath = self::buildRelativePath($alias, $subParts, $additionalPath);
-        return Path::join(self::$local, ltrim($relativePath, '/'));
-    }
-
-    /**
-     * @param array<string> $subParts
-     */
-    private static function buildHostPath(string $alias, array $subParts, ?string $additionalPath = null): string
-    {
-        if (self::$host === null) {
-            throw new \RuntimeException('Host not set. Call setHost() first.');
-        }
-
-        $relativePath = self::buildRelativePath($alias, $subParts, $additionalPath);
-        return '//' . self::$host . $relativePath;
+        return $base;
     }
 }

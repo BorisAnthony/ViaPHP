@@ -101,6 +101,41 @@ describe('Local Path and Host Management', function () {
         expect(Via::l())->toBeNull();
         expect(Via::h())->toBeNull();
     });
+
+    it('getLocal() and l() accept additional path parameter', function () {
+        Via::setLocal('/test/project');
+
+        expect(Via::getLocal('config/app.php'))->toBe('/test/project/config/app.php');
+        expect(Via::l('data/uploads'))->toBe('/test/project/data/uploads');
+
+        // Test path canonicalization
+        expect(Via::getLocal('cache/../temp//file.txt'))->toBe('/test/project/temp/file.txt');
+        expect(Via::l('dir1/./dir2/../final/'))->toBe('/test/project/dir1/final');
+    });
+
+    it('getHost() and h() accept additional path parameter', function () {
+        Via::setHost('example.com');
+
+        expect(Via::getHost('api/users'))->toBe('example.com/api/users');
+        expect(Via::h('assets/css'))->toBe('example.com/assets/css');
+
+        // Test path canonicalization
+        expect(Via::getHost('cache/../temp//file.css'))->toBe('example.com/temp/file.css');
+        expect(Via::h('dir1/./dir2/../final/'))->toBe('example.com/dir1/final');
+    });
+
+    it('additional path parameters work with null and empty strings', function () {
+        Via::setLocal('/test/project');
+        Via::setHost('example.com');
+
+        expect(Via::getLocal(null))->toBe('/test/project');
+        expect(Via::getLocal(''))->toBe('/test/project');
+        expect(Via::getHost(null))->toBe('example.com');
+        expect(Via::getHost(''))->toBe('example.com');
+
+        expect(Via::l(null))->toBe('/test/project');
+        expect(Via::h(''))->toBe('example.com');
+    });
 });
 
 describe('Base Management', function () {

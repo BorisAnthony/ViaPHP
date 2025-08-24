@@ -351,5 +351,79 @@ $functions = ['via', 'via_local', 'via_host'];
 foreach ($functions as $func) {
     echo "- {$func}(): " . (function_exists($func) ? 'Available' : 'Not available') . "\n";
 }
+echo "\n";
+
+// Example 15: Additional Path Parameters for getLocal() and getHost()
+echo "15. Additional Path Parameters for Local and Host Methods\n";
+echo "-------------------------------------------------------\n";
+
+Via::setLocal('/Users/demo/project');
+Via::setHost('app.local');
+
+echo "New feature: getLocal() and getHost() now accept additional path parameters!\n\n";
+
+echo "Class methods with additional paths:\n";
+echo "- Via::getLocal(): " . Via::getLocal() . "\n";
+echo "- Via::getLocal('config/app.php'): " . Via::getLocal('config/app.php') . "\n";
+echo "- Via::getLocal('uploads/images'): " . Via::getLocal('uploads/images') . "\n\n";
+
+echo "- Via::getHost(): " . Via::getHost() . "\n";
+echo "- Via::getHost('api/users'): " . Via::getHost('api/users') . "\n";
+echo "- Via::getHost('assets/css/main.css'): " . Via::getHost('assets/css/main.css') . "\n\n";
+
+echo "Shorthand methods with additional paths:\n";
+echo "- Via::l('data/cache'): " . Via::l('data/cache') . "\n";
+echo "- Via::h('static/js/app.js'): " . Via::h('static/js/app.js') . "\n\n";
+
+echo "Global functions with additional paths:\n";
+echo "- via_local('logs/error.log'): " . via_local('logs/error.log') . "\n";
+echo "- via_host('media/videos'): " . via_host('media/videos') . "\n\n";
+
+echo "Path canonicalization works here too:\n";
+echo "- Via::getLocal('cache/../temp//file.txt'): " . Via::getLocal('cache/../temp//file.txt') . "\n";
+echo "- Via::getHost('assets/./css/../js/app.js'): " . Via::getHost('assets/./css/../js/app.js') . "\n";
+echo "- via_local('dir1\\\\dir2/final/'): " . via_local('dir1\\dir2/final/') . "\n\n";
+
+// Example 16: Practical Usage Scenarios
+echo "16. Practical Usage Scenarios\n";
+echo "-----------------------------\n";
+
+echo "Perfect for configuration files:\n";
+$dbConfigPath = Via::getLocal('config/database.php');
+$logPath      = via_local('storage/logs/app.log');
+$apiUrl       = Via::getHost('api/v1/endpoint');
+$cdnUrl       = via_host('cdn/assets/logo.png');
+
+echo "- Database config: {$dbConfigPath}\n";
+echo "- Application log: {$logPath}\n";
+echo "- API endpoint: {$apiUrl}\n";
+echo "- CDN asset: {$cdnUrl}\n\n";
+
+echo "Template usage with direct path building:\n";
+echo "<?php\n";
+echo '// Build paths directly without configuring aliases' . "\n";
+echo '$configPath = via_local(\'config/\' . $env . \'.php\');' . "\n";
+echo '$assetUrl = via_host(\'assets/\' . $version . \'/app.js\');' . "\n";
+echo '$logFile = Via::getLocal(\'logs/\' . date(\'Y-m-d\') . \'.log\');' . "\n";
+echo '$apiEndpoint = Via::getHost(\'api/\' . $apiVersion . \'/users\');' . "\n";
+echo "?>\n\n";
+
+// Show actual execution
+$env         = 'production';
+$version     = 'v2.1';
+$apiVersion  = 'v1';
+$configPath  = via_local('config/' . $env . '.php');
+$assetUrl    = via_host('assets/' . $version . '/app.js');
+$logFile     = Via::getLocal('logs/' . date('Y-m-d') . '.log');
+$apiEndpoint = Via::getHost('api/' . $apiVersion . '/users');
+
+echo "Actual generated paths:\n";
+echo "- Config path: {$configPath}\n";
+echo "- Asset URL: {$assetUrl}\n";
+echo "- Log file: {$logFile}\n";
+echo "- API endpoint: {$apiEndpoint}\n\n";
+
+echo "This gives you the flexibility to build paths dynamically\n";
+echo "without having to configure every possible alias combination!\n\n";
 
 echo "\n=== Global Function Examples Complete ===\n";

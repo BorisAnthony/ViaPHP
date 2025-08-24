@@ -9,14 +9,14 @@ if (!function_exists('via')) {
     }
 }
 if (!function_exists('via_local')) {
-    function via_local(): ?string
+    function via_local(?string $additionalPath = null): ?string
     {
-        return \Via\Via::getLocal();
+        return \Via\Via::getLocal($additionalPath);
     }
 }
 if (!function_exists('via_host')) {
-    function via_host(): ?string
+    function via_host(?string $additionalPath = null): ?string
     {
-        return \Via\Via::getHost();
+        return \Via\Via::getHost($additionalPath);
     }
 }
