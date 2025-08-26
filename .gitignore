@@ -1,5 +1,8 @@
 .DS_Store
 /.claude
 CLAUDE.md
+/.agent-os
+/.cursor
+/_rnd
 /vendor
 *cache*
