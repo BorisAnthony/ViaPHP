@@ -15,6 +15,9 @@ class Via
 
     private static ?string $host = null;
 
+    /**
+     * Initialize the data container if it isn't already.
+     */
     private static function initData(): void
     {
         if (self::$data === null) {
@@ -85,11 +88,24 @@ class Via
         return $result;
     }
 
+    /**
+     * Set the local path
+     * (Uses Symfony\Component\Filesystem\Path::canonicalize())
+     * @param string $path
+     * @return void
+     */
     public static function setLocal(string $path): void
     {
         self::$local = Path::canonicalize($path);
     }
 
+    /**
+     * Get the local path
+     * Optionally join an additional path
+     * (Uses Symfony\Component\Filesystem\Path::join() which also canonicalizes)
+     * @param string|null $additionalPath
+     * @return string|null
+     */
     public static function getLocal(?string $additionalPath = null): ?string
     {
         if (self::$local === null) {
@@ -99,11 +115,23 @@ class Via
         return self::joinPaths(self::$local, $additionalPath);
     }
 
+    /**
+     * Set the host URL
+     * @param string $host
+     * @return void
+     */
     public static function setHost(string $host): void
     {
         self::$host = $host;
     }
 
+    /**
+     * Get the host URL
+     * Optionally join an additional path
+     * (Uses Symfony\Component\Filesystem\Path::join() which also canonicalizes)
+     * @param string|null $additionalPath
+     * @return string|null
+     */
     public static function getHost(?string $additionalPath = null): ?string
     {
         if (self::$host === null) {
@@ -113,6 +141,12 @@ class Via
         return self::joinPaths(self::$host, $additionalPath);
     }
 
+    /**
+     * Set the base path for a given alias
+     * (Uses Symfony\Component\Filesystem\Path::canonicalize())
+     * @param string $alias
+     * @param string $path
+     */
     public static function setBase(string $alias, string $path): void
     {
         self::initData();
@@ -203,6 +237,10 @@ class Via
 
     /**
      * Retrieve a configured path by dot notation
+     * (e.g., "rel.data.logs" or "local.data.logs" or "host.data.logs")
+     *
+     * Optionally join an additional path
+     * (Uses Symfony\Component\Filesystem\Path::join() which also canonicalizes)
      *
      * @param string $dotPath Path in dot notation (e.g., "rel.data.logs")
      * @param string|null $additionalPath Optional additional path to append
@@ -319,7 +357,11 @@ class Via
     }
 
     /**
-     * Build a path with optional additional path appended
+     * Join passed path segments
+     * (Uses Symfony\Component\Filesystem\Path::join() which also canonicalizes)
+     * @param string $base
+     * @param string|null $add
+     * @return string The joined path
      */
     private static function joinPaths(string $base, ?string $add): string
     {
@@ -331,11 +373,21 @@ class Via
         return $base;
     }
 
-    // ! Convenience shorthand forwarding methods
-    // - "p" for "path"
-    // - "h" for "host"
+    // # =======================================================================
+    // # Convenience shorthand forwarding methods
+    // # - "p" for "path"
+    // # - "h" for "host"
+    // # - "l" for "local"
+    // # - "j" for "joinPaths"
+    // # =======================================================================
 
     /**
+     * Retrieve a configured path by dot notation
+     * (e.g., "rel.data.logs" or "local.data.logs" or "host.data.logs")
+     *
+     * Optionally join an additional path
+     * (Uses Symfony\Component\Filesystem\Path::join() which also canonicalizes)
+     *
      * "p" for "path"
      *
      * @param string $dotPath Path in dot notation (e.g., "rel.data.logs")
@@ -348,10 +400,14 @@ class Via
     }
 
     /**
+     * Get the local path
+     * Optionally join an additional path
+     * (Uses Symfony\Component\Filesystem\Path::join() which also canonicalizes)
+     *
      * "l" for "local"
      *
-     * @param string|null $additionalPath Optional additional path to append
-     * @return string|null The resolved local path
+     * @param string|null $additionalPath
+     * @return string|null
      */
     public static function l(?string $additionalPath = null): ?string
     {
@@ -359,10 +415,14 @@ class Via
     }
 
     /**
+     * Get the host URL
+     * Optionally join an additional path
+     * (Uses Symfony\Component\Filesystem\Path::join() which also canonicalizes)
+     *
      * "h" for "host"
      *
-     * @param string|null $additionalPath Optional additional path to append
-     * @return string|null The resolved host
+     * @param string|null $additionalPath
+     * @return string|null
      */
     public static function h(?string $additionalPath = null): ?string
     {
@@ -370,7 +430,10 @@ class Via
     }
 
     /**
-     * "j" for "join"
+     * Join passed path segments
+     * (Uses Symfony\Component\Filesystem\Path::join() which also canonicalizes)
+     *
+     * "j" shorthand for "joinPaths"
      *
      * @param string $base The base path
      * @param string|null $add Optional additional path to append
