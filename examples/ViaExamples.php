@@ -377,6 +377,98 @@ echo "- Config include: {$configFile}\n\n";
 
 echo "This feature makes ViaPHP much more flexible while maintaining strict validation!\n\n";
 
+// Example 13: Via::j() Path Joining Method
+echo "13. Via::j() Path Joining Method\n";
+echo "-------------------------------\n";
+
+echo "ViaPHP now includes Via::j() - a utility method for joining arbitrary paths:\n\n";
+
+echo "Basic path joining:\n";
+echo "- Via::j('/base/path', 'subdir/file.txt'): " . Via::j('/base/path', 'subdir/file.txt') . "\n";
+echo "- Via::j('/usr/local', 'bin/php'): " . Via::j('/usr/local', 'bin/php') . "\n";
+echo "- Via::j('relative/path', 'more/segments'): " . Via::j('relative/path', 'more/segments') . "\n\n";
+
+echo "Path canonicalization (cleaning messy paths):\n";
+echo "- Via::j('/base/path', '../parent/file.txt'): " . Via::j('/base/path', '../parent/file.txt') . "\n";
+echo "- Via::j('/base/path', './current//file.txt'): " . Via::j('/base/path', './current//file.txt') . "\n";
+echo "- Via::j('/base/path', 'sub/../final/'): " . Via::j('/base/path', 'sub/../final/') . "\n\n";
+
+echo "Cross-platform path separators:\n";
+echo "- Via::j('/base/path', 'subdir\\\\file.txt'): " . Via::j('/base/path', 'subdir\\file.txt') . "\n";
+echo "- Via::j('C:\\\\base\\\\path', 'subdir/file.txt'): " . Via::j('C:\\base\\path', 'subdir/file.txt') . "\n\n";
+
+echo "URL-style paths (note: Symfony Path normalizes these):\n";
+echo "- Via::j('//example.com/path', 'subdir/file.txt'): " . Via::j('//example.com/path', 'subdir/file.txt') . "\n";
+echo "- Via::j('//cdn.example.com', 'assets/images/logo.png'): " . Via::j('//cdn.example.com', 'assets/images/logo.png') . "\n\n";
+
+echo "Null and empty handling:\n";
+echo "- Via::j('/base/path', null): " . Via::j('/base/path', null) . "\n";
+echo "- Via::j('/base/path', ''): " . Via::j('/base/path', '') . "\n\n";
+
+echo "Real-world usage scenarios:\n";
+$projectRoot = '/var/www/html';
+$userDir     = 'users/' . md5('user123');
+$fileName    = 'profile_' . date('Y-m-d') . '.json';
+
+$userPath = Via::j($projectRoot, $userDir);
+$filePath = Via::j($userPath, $fileName);
+
+echo "- Project root: {$projectRoot}\n";
+echo "- User directory: {$userDir}\n";
+echo "- File name: {$fileName}\n";
+echo "- User path: {$userPath}\n";
+echo "- Full file path: {$filePath}\n\n";
+
+echo "Dynamic path building:\n";
+$baseAssets  = '/public/assets';
+$version     = 'v2.1';
+$environment = 'production';
+
+$versionedAssets = Via::j($baseAssets, $version);
+$envAssets       = Via::j($versionedAssets, $environment);
+$cssFile         = Via::j($envAssets, 'css/main.min.css');
+$jsFile          = Via::j($envAssets, 'js/app.min.js');
+
+echo "- Base assets: {$baseAssets}\n";
+echo "- Versioned assets: {$versionedAssets}\n";
+echo "- Environment assets: {$envAssets}\n";
+echo "- CSS file: {$cssFile}\n";
+echo "- JS file: {$jsFile}\n\n";
+
+echo "Chain joining for deep paths:\n";
+$deepPath = Via::j(
+    Via::j(
+        Via::j('/app', 'storage'),
+        'uploads'
+    ),
+    'user_' . md5('example') . '/documents'
+);
+echo "- Deep path: {$deepPath}\n\n";
+
+echo "Independent of Via configuration:\n";
+echo "Via::j() works without any Via setup - it's a pure utility method:\n";
+echo "- Via::j('/tmp', 'cache/sessions'): " . Via::j('/tmp', 'cache/sessions') . "\n";
+echo "- Via::j('~/Documents', 'Projects/MyApp'): " . Via::j('~/Documents', 'Projects/MyApp') . " (~ expands to home)\n";
+echo "- Via::j('/usr/local/bin', '../lib/python3.9'): " . Via::j('/usr/local/bin', '../lib/python3.9') . "\n\n";
+
+echo "Perfect for template contexts where you need flexible path building:\n";
+echo "<?php\n";
+echo '$baseDir = \'/public/assets\';' . "\n";
+echo '$theme = \'dark\';' . "\n";
+echo '$cssPath = Via::j($baseDir, "themes/{$theme}/styles.css");' . "\n";
+echo '$jsPath = Via::j($baseDir, "themes/{$theme}/scripts.js");' . "\n";
+echo "?>\n\n";
+
+$theme   = 'dark';
+$cssPath = Via::j($baseAssets, "themes/{$theme}/styles.css");
+$jsPath  = Via::j($baseAssets, "themes/{$theme}/scripts.js");
+
+echo "Generated paths:\n";
+echo "- CSS: {$cssPath}\n";
+echo "- JS: {$jsPath}\n\n";
+
+echo "Via::j() complements the configured path system by providing arbitrary path joining!\n\n";
+
 echo "=== Examples Complete ===\n";
 
 // Demonstration that invalid paths now fail (as they should)

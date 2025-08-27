@@ -541,3 +541,113 @@ describe('Additional Path Parameter', function () {
             ->toThrow(\RuntimeException::class, 'Host not set. Call setHost() first.');
     });
 });
+
+describe('Via::j() Join Method', function () {
+    it('exists and is callable', function () {
+        expect(method_exists(Via::class, 'j'))->toBeTrue();
+        expect(is_callable([Via::class, 'j']))->toBeTrue();
+    });
+
+    it('joins two path segments', function () {
+        expect(Via::j('/base/path', 'subdir/file.txt'))->toBe('/base/path/subdir/file.txt');
+        expect(Via::j('/usr/local', 'bin/php'))->toBe('/usr/local/bin/php');
+        expect(Via::j('relative/path', 'more/segments'))->toBe('relative/path/more/segments');
+    });
+
+    it('handles null additional path', function () {
+        expect(Via::j('/base/path', null))->toBe('/base/path');
+        expect(Via::j('relative/path', null))->toBe('relative/path');
+        expect(Via::j('/', null))->toBe('/');
+    });
+
+    it('handles empty additional path', function () {
+        expect(Via::j('/base/path', ''))->toBe('/base/path');
+        expect(Via::j('relative/path', ''))->toBe('relative/path');
+        expect(Via::j('/', ''))->toBe('/');
+    });
+
+    it('canonicalizes joined paths', function () {
+        expect(Via::j('/base/path', '../parent/file.txt'))->toBe('/base/parent/file.txt');
+        expect(Via::j('/base/path', './current//file.txt'))->toBe('/base/path/current/file.txt');
+        expect(Via::j('/base/path', 'sub/../final/'))->toBe('/base/path/final');
+    });
+
+    it('handles various path separators', function () {
+        expect(Via::j('/base/path', 'subdir\\file.txt'))->toBe('/base/path/subdir/file.txt');
+        expect(Via::j('C:\\base\\path', 'subdir/file.txt'))->toBe('C:/base/path/subdir/file.txt');
+        expect(Via::j('/base/path/', '\\subdir\\file.txt'))->toBe('/base/path/subdir/file.txt');
+    });
+
+    it('works with absolute and relative base paths', function () {
+        expect(Via::j('/absolute/path', 'subdir'))->toBe('/absolute/path/subdir');
+        expect(Via::j('relative/path', 'subdir'))->toBe('relative/path/subdir');
+        expect(Via::j('.', 'subdir'))->toBe('subdir');
+        expect(Via::j('..', 'subdir'))->toBe('../subdir');
+    });
+
+    it('handles complex path structures', function () {
+        expect(Via::j('/project/src', 'components/ui/Button.php'))->toBe('/project/src/components/ui/Button.php');
+        expect(Via::j('/var/www', '../logs/error.log'))->toBe('/var/logs/error.log');
+        expect(Via::j('/base', 'dir1/./dir2/../dir3/file.txt'))->toBe('/base/dir1/dir3/file.txt');
+    });
+
+    it('preserves trailing slashes appropriately', function () {
+        expect(Via::j('/base/path/', 'subdir/'))->toBe('/base/path/subdir');
+        expect(Via::j('/base/path', 'subdir/'))->toBe('/base/path/subdir');
+    });
+
+    it('handles edge cases with dots', function () {
+        expect(Via::j('/base', '.'))->toBe('/base');
+        expect(Via::j('/base', '..'))->toBe('/');
+        expect(Via::j('/base/path', '../..'))->toBe('/');
+        expect(Via::j('relative', '.'))->toBe('relative');
+        expect(Via::j('relative', '..'))->toBe('');
+    });
+
+    it('works with URL-style paths', function () {
+        expect(Via::j('//example.com/path', 'subdir/file.txt'))->toBe('/example.com/path/subdir/file.txt');
+        expect(Via::j('//cdn.example.com', 'assets/images/logo.png'))->toBe('/cdn.example.com/assets/images/logo.png');
+    });
+
+    it('maintains path consistency with internal joinPaths method', function () {
+        Via::setLocal('/test/project');
+
+        $basePath       = '/data/uploads';
+        $additionalPath = 'images/gallery/photo.jpg';
+
+        $joinResult     = Via::j($basePath, $additionalPath);
+        $getLocalResult = Via::getLocal($additionalPath);
+
+        expect($joinResult)->toBe('/data/uploads/images/gallery/photo.jpg');
+        expect($getLocalResult)->toBe('/test/project/images/gallery/photo.jpg');
+
+        expect(str_contains($joinResult, $additionalPath))->toBeTrue();
+        expect(str_contains($getLocalResult, $additionalPath))->toBeTrue();
+    });
+
+    it('handles special characters in paths', function () {
+        expect(Via::j('/base/path', 'file with spaces.txt'))->toBe('/base/path/file with spaces.txt');
+        expect(Via::j('/base/path', 'file-with-dashes.txt'))->toBe('/base/path/file-with-dashes.txt');
+        expect(Via::j('/base/path', 'file_with_underscores.txt'))->toBe('/base/path/file_with_underscores.txt');
+    });
+
+    it('can be used for arbitrary path joining outside Via configuration', function () {
+        expect(Via::j('/tmp', 'cache/sessions'))->toBe('/tmp/cache/sessions');
+        expect(Via::j('/usr/local/bin', '../lib/python3.9'))->toBe('/usr/local/lib/python3.9');
+        // Symfony's Path canonicalization expands ~ to actual home directory
+        expect(Via::j('~/Documents', 'Projects/MyApp'))->toContain('Documents/Projects/MyApp');
+    });
+
+    it('is useful for building dynamic paths', function () {
+        $baseDir  = '/var/www/html';
+        $userDir  = 'users/' . md5('user123');
+        $fileName = 'profile_' . date('Y-m-d') . '.json';
+
+        $fullPath = Via::j(Via::j($baseDir, $userDir), $fileName);
+        expect($fullPath)->toMatch('#^/var/www/html/users/[a-f0-9]{32}/profile_\d{4}-\d{2}-\d{2}\.json$#');
+
+        $expectedUserHash = md5('user123');
+        $expectedDate     = date('Y-m-d');
+        expect($fullPath)->toBe("/var/www/html/users/{$expectedUserHash}/profile_{$expectedDate}.json");
+    });
+});

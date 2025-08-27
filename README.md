@@ -183,15 +183,62 @@ via('host.images', 'gallery/photo.jpg');           // '://foo.local.test/images/
 
 #### Global Functions
 
-For ultimate convenience, especially in templates, three global functions are available:
+For ultimate convenience, especially in templates, four global functions are available:
 
 ```
 via('rel.data.logs');                    // Path retrieval
 via_local();                             // Get local filesystem root
 via_host();                              // Get host domain
+via_join('/base/path', 'subdir');        // Arbitrary path joining
 ```
 
 These global functions are automatically available when you include the ViaPHP package via Composer's autoloader.
+
+## Path Joining Utility
+
+ViaPHP includes a powerful path joining utility that works independently of the configured path system:
+
+### Via::j() Method
+
+The `Via::j()` method provides arbitrary path joining with cross-platform canonicalization:
+
+```php
+// Basic path joining
+Via::j('/base/path', 'subdir/file.txt');  // → '/base/path/subdir/file.txt'
+
+// Path canonicalization (cleans messy paths)
+Via::j('/base/path', '../parent/file.txt');     // → '/base/parent/file.txt'
+Via::j('/base/path', './current//file.txt');    // → '/base/path/current/file.txt'
+
+// Cross-platform separator handling
+Via::j('/base/path', 'subdir\\file.txt');       // → '/base/path/subdir/file.txt'
+
+// Null and empty handling
+Via::j('/base/path', null);  // → '/base/path'
+Via::j('/base/path', '');    // → '/base/path'
+```
+
+### Global Function: via_join()
+
+For maximum template convenience, use the global `via_join()` function:
+
+```php
+// Identical to Via::j() but more concise in templates
+$cssPath = via_join('/public/assets', 'css/main.css');
+$logFile = via_join('/var/log/app', date('Y-m-d') . '.log');
+
+// Perfect for HTML templates
+echo '<link rel="stylesheet" href="' . via_join($assetBase, 'css/main.css') . '">';
+```
+
+**Key Features:**
+- **Independent Operation**: Works without any Via configuration
+- **Cross-Platform**: Handles various path separators (/, \, mixed)
+- **Path Canonicalization**: Cleans up messy paths with `..`, `./`, `//`
+- **Null Safety**: Gracefully handles null and empty additional paths
+- **Symfony Powered**: Uses Symfony Path component for reliable canonicalization
+
+This utility complements the configured path system by providing flexible arbitrary path joining for dynamic path construction scenarios.
 
 ---
 

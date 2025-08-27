@@ -17,6 +17,12 @@ if (!function_exists('via_local')) {
 if (!function_exists('via_host')) {
     function via_host(?string $additionalPath = null): ?string
     {
-        return \Via\Via::getHost($additionalPath);
+        return \Via\Via::h($additionalPath);
+    }
+}
+if (!function_exists('via_join')) {
+    function via_join(string $base, ?string $additionalPath = null): ?string
+    {
+        return \Via\Via::j($base, $additionalPath);
     }
 }

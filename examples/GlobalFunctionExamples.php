@@ -426,4 +426,197 @@ echo "- API endpoint: {$apiEndpoint}\n\n";
 echo "This gives you the flexibility to build paths dynamically\n";
 echo "without having to configure every possible alias combination!\n\n";
 
+// Example 17: Global via_join() Function
+echo "17. Global via_join() Function\n";
+echo "-----------------------------\n";
+
+echo "ViaPHP includes via_join() - a global utility for joining arbitrary paths:\n\n";
+
+echo "Function availability:\n";
+echo "- Function exists: " . (function_exists('via_join') ? 'Yes' : 'No') . "\n";
+echo "- Function callable: " . (is_callable('via_join') ? 'Yes' : 'No') . "\n\n";
+
+echo "Basic path joining:\n";
+echo "- via_join('/base/path', 'subdir/file.txt'): " . via_join('/base/path', 'subdir/file.txt') . "\n";
+echo "- via_join('/usr/local', 'bin/php'): " . via_join('/usr/local', 'bin/php') . "\n";
+echo "- via_join('relative/path', 'more/segments'): " . via_join('relative/path', 'more/segments') . "\n\n";
+
+echo "Path canonicalization:\n";
+echo "- via_join('/base/path', '../parent/file.txt'): " . via_join('/base/path', '../parent/file.txt') . "\n";
+echo "- via_join('/base/path', './current//file.txt'): " . via_join('/base/path', './current//file.txt') . "\n";
+echo "- via_join('/base/path', 'sub/../final/'): " . via_join('/base/path', 'sub/../final/') . "\n\n";
+
+echo "Cross-platform compatibility:\n";
+echo "- via_join('/base/path', 'subdir\\\\file.txt'): " . via_join('/base/path', 'subdir\\file.txt') . "\n";
+echo "- via_join('C:\\\\base\\\\path', 'subdir/file.txt'): " . via_join('C:\\base\\path', 'subdir/file.txt') . "\n\n";
+
+echo "URL-style paths (note: Symfony Path normalizes these):\n";
+echo "- via_join('//example.com/path', 'api/users'): " . via_join('//example.com/path', 'api/users') . "\n";
+echo "- via_join('//cdn.example.com', 'assets/images/logo.png'): " . via_join('//cdn.example.com', 'assets/images/logo.png') . "\n\n";
+
+echo "Null and empty handling:\n";
+echo "- via_join('/base/path', null): " . via_join('/base/path', null) . "\n";
+echo "- via_join('/base/path', ''): " . via_join('/base/path', '') . "\n\n";
+
+echo "Equivalence with Via::j():\n";
+$testBase = '/test/path';
+$testAdd  = 'subdir/file.txt';
+echo "- via_join('{$testBase}', '{$testAdd}'): " . via_join($testBase, $testAdd) . "\n";
+echo "- Via::j('{$testBase}', '{$testAdd}'): " . Via::j($testBase, $testAdd) . "\n";
+echo "- Results identical: " . (via_join($testBase, $testAdd) === Via::j($testBase, $testAdd) ? 'Yes' : 'No') . "\n\n";
+
+echo "Template usage scenarios:\n\n";
+
+echo "HTML templates:\n";
+echo "<!DOCTYPE html>\n";
+echo "<html>\n";
+echo "<head>\n";
+$baseAssets = '/public/assets';
+$cssFile    = via_join($baseAssets, 'css/main.css');
+$jsFile     = via_join($baseAssets, 'js/app.min.js');
+echo '    <link rel="stylesheet" href="' . $cssFile . '">' . "\n";
+echo '    <script src="' . $jsFile . '"></script>' . "\n";
+echo "</head>\n";
+echo "<body>\n";
+$logoPath = via_join('/storage/uploads', 'images/logo.png');
+echo '    <img src="' . $logoPath . '" alt="Logo">' . "\n";
+echo "</body>\n";
+echo "</html>\n\n";
+
+echo "PHP includes:\n";
+echo "<?php\n";
+$configBase = '/app/config';
+$dbConfig   = via_join($configBase, 'database.php');
+$appConfig  = via_join($configBase, 'app.php');
+echo "require_once '{$dbConfig}';\n";
+echo "require_once '{$appConfig}';\n";
+
+$srcBase   = '/app/src';
+$utilsPath = via_join($srcBase, 'utils/helpers.php');
+$authPath  = via_join($srcBase, 'auth/LoginController.php');
+echo "include '{$utilsPath}';\n";
+echo "include '{$authPath}';\n";
+echo "?>\n\n";
+
+echo "Dynamic path building:\n";
+$userBase     = '/storage/users';
+$userId       = md5('user123');
+$userDir      = via_join($userBase, $userId);
+$avatarFile   = via_join($userDir, 'avatar.jpg');
+$documentsDir = via_join($userDir, 'documents');
+
+echo "- User base: {$userBase}\n";
+echo "- User ID hash: {$userId}\n";
+echo "- User directory: {$userDir}\n";
+echo "- Avatar file: {$avatarFile}\n";
+echo "- Documents directory: {$documentsDir}\n\n";
+
+echo "Log file generation:\n";
+$logBase      = '/var/log/myapp';
+$currentDate  = date('Y-m-d');
+$currentMonth = date('Y/m');
+$errorLog     = via_join($logBase, "errors/{$currentDate}.log");
+$accessLog    = via_join($logBase, "access/{$currentMonth}/access.log");
+$apiLog       = via_join($logBase, "api/{$currentDate}-requests.log");
+
+echo "- Log base: {$logBase}\n";
+echo "- Error log: {$errorLog}\n";
+echo "- Access log: {$accessLog}\n";
+echo "- API log: {$apiLog}\n\n";
+
+echo "Cache path building:\n";
+$cacheBase   = '/tmp/cache';
+$environment = 'production';
+$version     = 'v2.1';
+$cacheDir    = via_join(via_join($cacheBase, $environment), $version);
+$viewCache   = via_join($cacheDir, 'views');
+$routeCache  = via_join($cacheDir, 'routes.php');
+$configCache = via_join($cacheDir, 'config.php');
+
+echo "- Cache base: {$cacheBase}\n";
+echo "- Environment: {$environment}\n";
+echo "- Version: {$version}\n";
+echo "- Cache directory: {$cacheDir}\n";
+echo "- View cache: {$viewCache}\n";
+echo "- Route cache: {$routeCache}\n";
+echo "- Config cache: {$configCache}\n\n";
+
+echo "Asset versioning:\n";
+$publicBase      = '/public';
+$assetVersion    = 'build_' . time();
+$versionedAssets = via_join($publicBase, "assets/{$assetVersion}");
+$cssAssets       = via_join($versionedAssets, 'css');
+$jsAssets        = via_join($versionedAssets, 'js');
+$imageAssets     = via_join($versionedAssets, 'images');
+
+echo "- Public base: {$publicBase}\n";
+echo "- Asset version: {$assetVersion}\n";
+echo "- Versioned assets: {$versionedAssets}\n";
+echo "- CSS assets: {$cssAssets}\n";
+echo "- JS assets: {$jsAssets}\n";
+echo "- Image assets: {$imageAssets}\n\n";
+
+echo "Real-world configuration example:\n";
+echo "<?php\n";
+echo '$paths = [' . "\n";
+echo '    \'base\' => \'/var/www/myapp\',' . "\n";
+echo '    \'storage\' => via_join(\'/var/www/myapp\', \'storage\'),' . "\n";
+echo '    \'uploads\' => via_join(\'/var/www/myapp\', \'storage/uploads\'),' . "\n";
+echo '    \'logs\' => via_join(\'/var/www/myapp\', \'storage/logs\'),' . "\n";
+echo '    \'cache\' => via_join(\'/var/www/myapp\', \'storage/cache\'),' . "\n";
+echo '    \'public\' => via_join(\'/var/www/myapp\', \'public\'),' . "\n";
+echo '    \'assets\' => via_join(\'/var/www/myapp\', \'public/assets\'),' . "\n";
+echo '];' . "\n";
+echo "?>\n\n";
+
+$paths = [
+    'base'    => '/var/www/myapp',
+    'storage' => via_join('/var/www/myapp', 'storage'),
+    'uploads' => via_join('/var/www/myapp', 'storage/uploads'),
+    'logs'    => via_join('/var/www/myapp', 'storage/logs'),
+    'cache'   => via_join('/var/www/myapp', 'storage/cache'),
+    'public'  => via_join('/var/www/myapp', 'public'),
+    'assets'  => via_join('/var/www/myapp', 'public/assets'),
+];
+
+echo "Generated configuration:\n";
+foreach ($paths as $key => $path) {
+    echo "- {$key}: {$path}\n";
+}
+echo "\n";
+
+echo "Chain operations for complex paths:\n";
+$complexPath = via_join(
+    via_join(
+        via_join('/app', 'storage'),
+        'tenant_' . md5('tenant123')
+    ),
+    'uploads/documents/' . date('Y/m')
+);
+
+echo "- Complex nested path: {$complexPath}\n\n";
+
+echo "Independent utility - works without any Via configuration:\n";
+echo "- via_join('/tmp', 'sessions'): " . via_join('/tmp', 'sessions') . "\n";
+echo "- via_join('~/Documents', 'Projects'): " . via_join('~/Documents', 'Projects') . " (~ expands to home)\n";
+echo "- via_join('/usr/local/bin', '../lib'): " . via_join('/usr/local/bin', '../lib') . "\n\n";
+
+echo "Perfect complement to the other global functions:\n";
+echo "<?php\n";
+echo '// Base configuration' . "\n";
+echo '$projectRoot = via_local();' . "\n";
+echo '$hostDomain = via_host();' . "\n";
+echo '' . "\n";
+echo '// Dynamic path building' . "\n";
+echo '$uploadsDir = via_join($projectRoot, \'storage/uploads\');' . "\n";
+echo '$userUploads = via_join($uploadsDir, \'users/\' . $userId);' . "\n";
+echo '$assetUrl = via_join(\'//\' . $hostDomain, \'assets/css/main.css\');' . "\n";
+echo '' . "\n";
+echo '// Mixed approach - configured + dynamic' . "\n";
+echo '$dataPath = via(\'local.data\');  // From Via configuration' . "\n";
+echo '$userDataPath = via_join($dataPath, \'users/\' . $userId);  // Dynamic addition' . "\n";
+echo "?>\n\n";
+
+echo "This provides maximum flexibility for path manipulation in templates and configuration!\n\n";
+
 echo "\n=== Global Function Examples Complete ===\n";

@@ -138,3 +138,141 @@ describe('Global via_local() and via_host() functions', function () {
         expect(via_host($additionalPath))->toBe(Via::getHost($additionalPath));
     });
 });
+
+describe('Global via_join() function', function () {
+    it('exists and is callable', function () {
+        expect(function_exists('via_join'))->toBeTrue();
+        expect(is_callable('via_join'))->toBeTrue();
+    });
+
+    it('forwards to Via::j() with identical results', function () {
+        $basePath       = '/base/path';
+        $additionalPath = 'subdir/file.txt';
+
+        expect(via_join($basePath, $additionalPath))->toBe(Via::j($basePath, $additionalPath));
+        expect(via_join($basePath, $additionalPath))->toBe('/base/path/subdir/file.txt');
+    });
+
+    it('joins paths correctly', function () {
+        expect(via_join('/usr/local', 'bin/php'))->toBe('/usr/local/bin/php');
+        expect(via_join('relative/path', 'more/segments'))->toBe('relative/path/more/segments');
+        expect(via_join('/project/data', 'uploads/images'))->toBe('/project/data/uploads/images');
+    });
+
+    it('handles null additional path', function () {
+        expect(via_join('/base/path', null))->toBe('/base/path');
+        expect(via_join('relative/path', null))->toBe('relative/path');
+        expect(via_join('/', null))->toBe('/');
+    });
+
+    it('handles empty additional path', function () {
+        expect(via_join('/base/path', ''))->toBe('/base/path');
+        expect(via_join('relative/path', ''))->toBe('relative/path');
+        expect(via_join('/', ''))->toBe('/');
+    });
+
+    it('canonicalizes joined paths', function () {
+        expect(via_join('/base/path', '../parent/file.txt'))->toBe('/base/parent/file.txt');
+        expect(via_join('/base/path', './current//file.txt'))->toBe('/base/path/current/file.txt');
+        expect(via_join('/base/path', 'sub/../final/'))->toBe('/base/path/final');
+    });
+
+    it('handles various path separators', function () {
+        expect(via_join('/base/path', 'subdir\\file.txt'))->toBe('/base/path/subdir/file.txt');
+        expect(via_join('C:\\base\\path', 'subdir/file.txt'))->toBe('C:/base/path/subdir/file.txt');
+        expect(via_join('/base/path/', '\\subdir\\file.txt'))->toBe('/base/path/subdir/file.txt');
+    });
+
+    it('works with complex path structures', function () {
+        expect(via_join('/project/src', 'components/ui/Button.php'))->toBe('/project/src/components/ui/Button.php');
+        expect(via_join('/var/www', '../logs/error.log'))->toBe('/var/logs/error.log');
+        expect(via_join('/base', 'dir1/./dir2/../dir3/file.txt'))->toBe('/base/dir1/dir3/file.txt');
+    });
+
+    it('works with URL-style paths', function () {
+        expect(via_join('//example.com/path', 'subdir/file.txt'))->toBe('/example.com/path/subdir/file.txt');
+        expect(via_join('//cdn.example.com', 'assets/images/logo.png'))->toBe('/cdn.example.com/assets/images/logo.png');
+    });
+
+    it('handles special characters in paths', function () {
+        expect(via_join('/base/path', 'file with spaces.txt'))->toBe('/base/path/file with spaces.txt');
+        expect(via_join('/base/path', 'file-with-dashes.txt'))->toBe('/base/path/file-with-dashes.txt');
+        expect(via_join('/base/path', 'file_with_underscores.txt'))->toBe('/base/path/file_with_underscores.txt');
+    });
+
+    it('can be used independently of Via configuration', function () {
+        expect(via_join('/tmp', 'cache/sessions'))->toBe('/tmp/cache/sessions');
+        expect(via_join('/usr/local/bin', '../lib/python3.9'))->toBe('/usr/local/lib/python3.9');
+        // Symfony's Path canonicalization expands ~ to actual home directory
+        expect(via_join('~/Documents', 'Projects/MyApp'))->toContain('Documents/Projects/MyApp');
+    });
+
+    it('is perfect for template usage', function () {
+        $baseAssets = '/public/assets';
+        $cssFile    = 'css/main.css';
+        $jsFile     = 'js/app.min.js';
+
+        expect(via_join($baseAssets, $cssFile))->toBe('/public/assets/css/main.css');
+        expect(via_join($baseAssets, $jsFile))->toBe('/public/assets/js/app.min.js');
+
+        $baseUploads = '/storage/uploads';
+        $userFolder  = 'users/' . md5('user123');
+        $avatarFile  = 'avatar.jpg';
+
+        $userPath   = via_join($baseUploads, $userFolder);
+        $avatarPath = via_join($userPath, $avatarFile);
+
+        $expectedUserHash = md5('user123');
+        expect($userPath)->toBe("/storage/uploads/users/{$expectedUserHash}");
+        expect($avatarPath)->toBe("/storage/uploads/users/{$expectedUserHash}/avatar.jpg");
+    });
+
+    it('maintains equivalence with Via::j() across all scenarios', function () {
+        $testCases = [
+            ['/base/path', 'subdir/file.txt'],
+            ['/usr/local', 'bin/php'],
+            ['relative/path', 'more/segments'],
+            ['/base/path', null],
+            ['relative/path', ''],
+            ['/base/path', '../parent/file.txt'],
+            ['/base/path', 'subdir\\file.txt'],
+            ['//example.com/path', 'subdir/file.txt'],
+            ['/tmp', 'cache/sessions']
+        ];
+
+        foreach ($testCases as [$base, $additional]) {
+            $viaJoinResult = via_join($base, $additional);
+            $viaJResult    = Via::j($base, $additional);
+
+            expect($viaJoinResult)->toBe($viaJResult, "Failed for base: '{$base}', additional: '{$additional}'");
+        }
+    });
+
+    it('works in practical scenarios like the other global functions', function () {
+        $projectRoot = '/Users/demo/myapp';
+        $dataDir     = 'data';
+        $configDir   = 'config';
+        $logDir      = 'logs';
+
+        $configPath = via_join(via_join($projectRoot, $dataDir), $configDir);
+        $logPath    = via_join(via_join($projectRoot, $dataDir), $logDir);
+
+        expect($configPath)->toBe('/Users/demo/myapp/data/config');
+        expect($logPath)->toBe('/Users/demo/myapp/data/logs');
+
+        $todayLog = via_join($logPath, date('Y-m-d') . '.log');
+        expect($todayLog)->toMatch('#^/Users/demo/myapp/data/logs/\d{4}-\d{2}-\d{2}\.log$#');
+
+        $expectedDate = date('Y-m-d');
+        expect($todayLog)->toBe("/Users/demo/myapp/data/logs/{$expectedDate}.log");
+    });
+
+    it('is safe from function redefinition conflicts', function () {
+        expect(function_exists('via_join'))->toBeTrue();
+
+        $result = via_join('/test/path', 'subdir');
+        expect($result)->toBe('/test/path/subdir');
+
+        expect(is_callable('via_join'))->toBeTrue();
+    });
+});

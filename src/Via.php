@@ -99,11 +99,6 @@ class Via
         return self::joinPaths(self::$local, $additionalPath);
     }
 
-    public static function l(?string $additionalPath = null): ?string
-    {
-        return self::getLocal($additionalPath);
-    }
-
     public static function setHost(string $host): void
     {
         self::$host = $host;
@@ -116,11 +111,6 @@ class Via
         }
 
         return self::joinPaths(self::$host, $additionalPath);
-    }
-
-    public static function h(?string $additionalPath = null): ?string
-    {
-        return self::getHost($additionalPath);
     }
 
     public static function setBase(string $alias, string $path): void
@@ -239,19 +229,6 @@ class Via
     }
 
     /**
-     * Convenience shorthand forwarding method
-     * - "p" for "path"
-     *
-     * @param string $dotPath Path in dot notation (e.g., "rel.data.logs")
-     * @param string|null $additionalPath Optional additional path to append
-     * @return string The resolved path
-     */
-    public static function p(string $dotPath, ?string $additionalPath = null): string
-    {
-        return self::get($dotPath, $additionalPath);
-    }
-
-    /**
      * @param array<string> $subParts
      */
     private static function buildTypedPath(string $type, string $alias, array $subParts, ?string $additionalPath = null): string
@@ -352,5 +329,55 @@ class Via
         }
 
         return $base;
+    }
+
+    // ! Convenience shorthand forwarding methods
+    // - "p" for "path"
+    // - "h" for "host"
+
+    /**
+     * "p" for "path"
+     *
+     * @param string $dotPath Path in dot notation (e.g., "rel.data.logs")
+     * @param string|null $additionalPath Optional additional path to append
+     * @return string The resolved path
+     */
+    public static function p(string $dotPath, ?string $additionalPath = null): string
+    {
+        return self::get($dotPath, $additionalPath);
+    }
+
+    /**
+     * "l" for "local"
+     *
+     * @param string|null $additionalPath Optional additional path to append
+     * @return string|null The resolved local path
+     */
+    public static function l(?string $additionalPath = null): ?string
+    {
+        return self::getLocal($additionalPath);
+    }
+
+    /**
+     * "h" for "host"
+     *
+     * @param string|null $additionalPath Optional additional path to append
+     * @return string|null The resolved host
+     */
+    public static function h(?string $additionalPath = null): ?string
+    {
+        return self::getHost($additionalPath);
+    }
+
+    /**
+     * "j" for "join"
+     *
+     * @param string $base The base path
+     * @param string|null $add Optional additional path to append
+     * @return string The joined path
+     */
+    public static function j(string $base, ?string $add): ?string
+    {
+        return self::joinPaths($base, $add);
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "borisanthony/viaphp",
-  "description": "PHP 8.3+ utility library for setting and retrieving system paths",
+  "description": "PHP 8.3+ utility library for path aliases and arbitrary path joining with cross-platform canonicalization",
   "type": "library",
   "minimum-stability": "stable",
   "license": "MIT",
@@ -47,6 +47,9 @@
     "utilities",
     "paths",
     "aliases",
+    "path-joining",
+    "canonicalization", 
+    "cross-platform",
     "php8",
     "helper"
   ],
