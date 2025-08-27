@@ -23,7 +23,7 @@
       "Via\\": "src/"
     },
     "files": [
-        "src/functions.php"
+      "src/functions.php"
     ]
   },
   "autoload-dev": {
@@ -38,7 +38,9 @@
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.86",
+    "mikey179/vfsstream": "^1.6",
     "pestphp/pest": "^3.8",
+    "pestphp/pest-plugin-type-coverage": "^3.6",
     "phpstan/phpstan": "^2.1",
     "rector/rector": "^2.1",
     "symfony/var-dumper": "^7.3"
@@ -48,7 +50,7 @@
     "paths",
     "aliases",
     "path-joining",
-    "canonicalization", 
+    "canonicalization",
     "cross-platform",
     "php8",
     "helper"
@@ -63,6 +65,7 @@
     "post-install-cmd": [
       "composer dump-autoload -o"
     ],
-    "test": "./vendor/bin/pest"
+    "test": "./vendor/bin/pest",
+    "coverage": "./vendor/bin/pest --type-coverage --min=90"
   }
 }
