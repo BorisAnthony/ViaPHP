@@ -117,10 +117,10 @@ class Via
 
     /**
      * Set the host URL
-     * @param string $host
+     * @param string|null $host
      * @return void
      */
-    public static function setHost(string $host): void
+    public static function setHost(?string $host = null): void
     {
         self::$host = $host;
     }
